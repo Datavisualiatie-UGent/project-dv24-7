@@ -30,3 +30,6 @@ while read -r set; do
   "$here_dir/get_set.sh" "$set"
   ((curr++))
 done <"$out_dir/set_codes.txt"
+
+echo "### Step 3: zip all sets ###"
+zip "$out_dir/cards.zip" $out_dir/*.json -x "$out_dir/sets.json"

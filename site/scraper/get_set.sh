@@ -19,7 +19,7 @@ while [[ "$more_pgs" = "true" ]]; do
 
   more_pgs=$(tr ',' '\n' <".tmp.json" | grep "has_more" | cut -d':' -f2)
   echo "," >>"$OUTDIR/$1.json"
-  jq '[.data]' <".tmp.json" >".tmp.json.2"
+  jq '.data' <".tmp.json" >".tmp.json.2"
   jq -s 'add' ".tmp.json.1" ".tmp.json.2" >".tmp.json.3"
   mv ".tmp.json.3" ".tmp.json.1"
 done
