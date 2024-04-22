@@ -35,10 +35,16 @@ const load_cards = async () => {
 const cards_by_sets = await load_cards();
 ```
 
+
 ## Evolution of color distribution
 ```js
-import {color_per_set_per_year} from './components/renderers.js';
-display(color_per_set_per_year(sets, cards_by_sets));
+import {color_per_year_bar} from './components/renderers.js';
+display(color_per_year_bar(sets, cards_by_sets));
+```
+
+```js
+import {color_per_year_area} from './components/renderers.js';
+display(color_per_year_area(sets, cards_by_sets));
 ```
 
 ## Evolution of set size
