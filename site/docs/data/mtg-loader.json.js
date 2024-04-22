@@ -240,7 +240,7 @@ const set_size_count = Object.keys(cards).reduce((acc, curr) => {
 const faces_data = await readFile(fileURLToPath(import.meta.resolve("./faces.json")), "utf-8");
 const faces = JSON.parse(faces_data);
 
-const sets_data = await readFile(fileURLToPath(import.meta.resolve("./sets.json")), "utf-8");
+const sets_data = await readFile(fileURLToPath(import.meta.resolve("./sets-jq.json")), "utf-8");
 const sets = JSON.parse(sets_data);
 
 for (const code in sets) {
