@@ -352,9 +352,8 @@ export const color_per_year_bar = (sets, cards, {w, h} = {w:1200, h:600}, {from,
     return svg.node();
 }
 
-export const color_per_year_area = (sets, cards, {w, h} = {w:1200, h:600}, {from, to} = {from:1990, to:2030}) => {
+export const color_per_year_area = (sets, cards, {w, h} = {w:1200, h:600}, {from, to} = {from:1990, to:2030}, legend_w = 150) => {
     const actual = filter_years(sets, from, to);
-    const double = [];
     const year_to_count = [];
     for(let i = Math.max(from, sets[0].release.getFullYear()); i <= Math.min(to, sets.at(-1).release.getFullYear()); i++) {
         const year_sets = actual.filter(set => set.release.getFullYear() === i);
@@ -372,7 +371,7 @@ export const color_per_year_area = (sets, cards, {w, h} = {w:1200, h:600}, {from
 
     const x = d3.scaleBand()
         .domain(year_to_count.map(year => year.year))
-      .range([marginLeft, w - marginRight])
+      .range([marginLeft, w - legend_w - marginRight])
       .padding(0.1);
 
     const y = d3.scaleLinear()
@@ -384,8 +383,7 @@ export const color_per_year_area = (sets, cards, {w, h} = {w:1200, h:600}, {from
 
     var color = d3.scaleOrdinal()
     .domain(subgroups)
-    .range(['#838383','#006600','#CC0000', '#000000', '#0066CC', '#FFFFFF', '#FFCC00'])
-    .unknown("#ccc");
+    .range(['#838383','#006600','#CC0000', '#000000', '#0066CC', '#FFFFFF', '#FFCC00']);
 
     const area = d3.area()
       .x(d => x(d.data[0]))
@@ -400,12 +398,79 @@ export const color_per_year_area = (sets, cards, {w, h} = {w:1200, h:600}, {from
         .attr('transform', `translate(${marginLeft}, 0)`)
         .call(d3.axisLeft(y));
 
+    svg.append("text")
+        .attr("text-anchor", "end")
+        .attr("x", w-legend_w/2)
+        .attr("y", h-40 )
+        .text("Time (year)");
+
+    svg.append("text")
+        .attr("text-anchor", "end")
+        .attr("x", 0)
+        .attr("y", -20 )
+        .text("# of baby born")
+        .attr("text-anchor", "start")
+
     svg.append("g")
-        .selectAll()
+        .selectAll("myLayers")
         .data(series)
         .join("path")
-          .attr("fill", d => color(d.key))
-          .attr("d", area);
+            .attr("class", function(d) {return "myArea " + d.key;})
+            .attr("fill", d => color(d.key))
+            .attr("d", area)
+
+
+    const tooltip = d3.select("body")
+        .append("div")
+        .style("visibility", "hidden")
+        .attr("class", "tooltip")
+        .style("background-color", "white")
+        .style("border", "solid")
+        .style("border-width", "1px")
+        .style("border-radius", "5px")
+        .style("padding", "10px")
+        .style("width", "250px")
+        .style("height", "auto")
+        .style("position", "absolute");
+
+    var highlight = function(event, d){
+        d3.selectAll(".myArea").style("opacity", .25);
+        d3.select("." + d).style("opacity", 1);
+        tooltip.style("visibility", "visible");
+        tooltip.html(`set ${d}`)
+            .style("left", (event.pageX) + "px")
+            .style("top", (event.pageY) + "px");
+    }
+    
+    var noHighlight = function(event, d){
+        d3.selectAll(".myArea").style("opacity", 1);
+        tooltip.style("visibility", "hidden");
+    }
+
+    var size = 20
+    svg.selectAll("myrect")
+        .data(subgroups)
+        .join("rect")
+        .attr("x", w - legend_w)
+        .attr("y", function(d,i){ return 200 - i*(size+5)})
+        .attr("width", size)
+        .attr("height", size)
+        .style("fill", function(d){ return color(d)})
+        .style("stroke", "black")
+        .on("mouseover", highlight)
+        .on("mouseleave", noHighlight)
+
+    svg.selectAll("mylabels")
+        .data(subgroups)
+        .join("text")
+          .attr("x", w - legend_w + size*1.2)
+          .attr("y", function(d,i){ return 200 - i*(size+5) + (size/2)})
+          .style("fill", 'black')
+          .text(function(d){ return d})
+          .attr("text-anchor", "left")
+          .style("alignment-baseline", "middle")
+          .on("mouseover", highlight)
+          .on("mouseleave", noHighlight)
 
     return svg.node();
 }
@@ -436,6 +501,10 @@ export const color_area = (sets, cards, {w, h} = {w:1200, h:600}, {from, to} = {
 
     const data = actual;
     const subgroups = d3.union(data.map(d => d.color));
+    var color = d3.scaleOrdinal()
+    .domain(subgroups)
+    .range(['#838383','#006600','#CC0000', '#000000', '#0066CC', '#FFFFFF', '#FFCC00'])
+    .unknown("#ccc");
 
     var series = d3.stack()
         .keys(subgroups)
@@ -453,11 +522,6 @@ export const color_area = (sets, cards, {w, h} = {w:1200, h:600}, {from, to} = {
 
 
     const svg = d3.create("svg").attr("width", w).attr("height", h);
-
-    var color = d3.scaleOrdinal()
-    .domain(subgroups)
-    .range(['#838383','#006600','#CC0000', '#000000', '#0066CC', '#FFFFFF', '#FFCC00'])
-    .unknown("#ccc");
 
     const area = d3.area()
       .x(d => x(d.data[0]))

@@ -58,3 +58,9 @@ display(cards_per_set_per_year(sets, cards_by_sets));
 import {cards_per_year} from './components/renderers.js';
 display(cards_per_year(sets, cards_by_sets));
 ```
+
+## Number of cards released per year
+```js
+import {word_cloud} from './components/renderers.js';
+display(word_cloud(cards_by_sets));
+```
