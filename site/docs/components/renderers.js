@@ -124,22 +124,6 @@ export const sets_per_year = (sets, {w, h} = {w:1200, h:600}, {from, to} = {from
         .attr('height', d => h - marginBottom - y(d.count))
         .attr('fill', 'steelblue');
 
-    const reg = regression.polynomial(year_to_count.map(year => [year.year - year_to_count[0].year, year.count]), { order: 2 });
-    const reg_line = [];
-    for(let i = year_to_count[0].year; i <= year_to_count.at(-1).year; i++) {
-        reg_line.push({ year: i, count: reg.predict(i - year_to_count[0].year)[1] });
-    }
-
-    svg.append('path')
-        .datum(reg_line)
-        .attr('fill', 'none')
-        .attr('stroke', 'maroon')
-        .attr('stroke-width', 2)
-        .attr('d', d3.line()
-            .x(d => x(d.year))
-            .y(d => y(d.count))
-        );
-
     return svg.node();
 }
 
@@ -212,26 +196,26 @@ export const complexity = (sets, cards, {w, h} = {w:1200, h:600}, {from, to} = {
         .attr('transform', `translate(${marginLeft}, 0)`)
         .call(d3.axisLeft(y));
 
-    svg.append('path')
-        .datum(actual)
-        .attr('fill', 'none')
-        .attr('stroke', 'maroon')
-        .attr('stroke-width', 2)
-        .attr('d', d3.line()
-            .x(d => x(d.release))
-            .y(d => y(d.avg))
-        );
+    // svg.append('path')
+    //     .datum(actual)
+    //     .attr('fill', 'none')
+    //     .attr('stroke', 'maroon')
+    //     .attr('stroke-width', 2)
+    //     .attr('d', d3.line()
+    //         .x(d => x(d.release))
+    //         .y(d => y(d.avg))
+    //     );
 
     svg.append('g')
         .selectAll('circle')
         .data(actual)
         .join('circle')
         .attr('stroke', 'steelblue')
-        .attr('fill', 'currentColor')
+        .attr('fill', 'steelblue')
         .attr('opacity', 0.5)
         .attr('cx', d => x(d.release))
         .attr('cy', d => y(d.avg))
-        .attr('r', 5)
+        .attr('r', 3)
         .on("mouseover", mouse_over)
         .on("mousemove", mouse_move)
         .on("mouseleave", mouse_leave);
@@ -308,46 +292,40 @@ export const complexity_by_kind = (kinds, unfiltered_sets, cards, {w, h} = {w:12
         .style("height", "auto")
         .style("position", "absolute");
 
+    let last_kind = '';
+    let always_on = [];
+    const circle_ids = kinds.map(k => `circle-${k}`);
+    const color_for = (kind) => d3.interpolateTurbo(kinds.indexOf(kind) / kinds.length);
+
     const mouse_over = (d) => {
         tooltip.style("visibility", "visible");
     }
+
     const mouse_move = (event, d) => {
         tooltip.html(`Set ${d.name} (Code ${d.set})<br>Average ${d.avg.toFixed(2)} words/card.<br>Set type: ${d.type}`)
             .style("left", (event.pageX) + "px")
             .style("top", (event.pageY) + "px");
+        d3.select(`#reg-line-${d.type}`).transition().style('visibility', 'visible').style('stroke', color_for(d.type));
+        last_kind = d.type;
+        circle_ids.filter(id => id !== `circle-${d.type}`).filter(id => !always_on.includes(id.split('-')[1])).forEach(id => d3.selectAll(`.${id}`).transition().style('opacity', 0.15));
     }
 
-    const ids = kinds.map(kind => `line-${kind}`);
-    const circ_ids = kinds.map(kind => `circle-${kind}`);
-    const color_for = (kind) => d3.interpolateTurbo(kinds.indexOf(kind) / kinds.length);
-
-    let last_enter = '';
-
-    const mouse_move_line = (event, d) => {
-        tooltip.html(`Set kind: ${d[0].type}`)
-            .style("left", (event.pageX) + "px")
-            .style("top", (event.pageY) + "px");
-        ids.forEach(id => d3.select(`#${id}`)
-            .transition()
-            .style('opacity', id === `line-${d[0].type}` ? 1.0 : 0.2));
-
-        circ_ids.forEach(id => d3.selectAll(`.${id}`).transition().style('opacity', id === `circle-${d[0].type}` ? 1.0 : 0.0));
-
-        d3.select(`#line-${d[0].type}`).transition().style('stroke', 'black');
-        d3.select(`#reg-line-${d[0].type}`).transition().style('visibility', 'visible');
-        last_enter = d[0].type;
+    const mouse_move_legend = (event, d) => {
+        d3.select(`#reg-line-${d}`).transition().style('visibility', 'visible').style('stroke', color_for(d));
+        last_kind = d;
+        circle_ids.filter(id => id !== `circle-${d}`).forEach(id => d3.selectAll(`.${id}`).transition().style('opacity', 0.15));
     }
 
     const mouse_leave = (d) => {
         tooltip.style("visibility", "hidden");
+        if(!always_on.includes(last_kind)) d3.select(`#reg-line-${last_kind}`).transition().style('visibility', 'hidden');
+        circle_ids.forEach(id => d3.selectAll(`.${id}`).transition().style('opacity', 1));
     }
 
-    const mouse_leave_line = (d) => {
-        tooltip.style("visibility", "hidden");
-        ids.forEach(id => d3.select(`#${id}`).transition().style('opacity', 1.0));
-        d3.select(`#line-${last_enter}`).transition().style('stroke', color_for(last_enter));
-        circ_ids.forEach(id => d3.selectAll(`.${id}`).transition().style('opacity', 0.25));
-        d3.select(`#reg-line-${last_enter}`).transition().style('visibility', 'hidden');
+    const legend_click = (event, d) => {
+        const id = d.replaceAll(' ', '_');
+        if(always_on.includes(id)) always_on = always_on.filter(x => x !== id);
+        else always_on.push(id);
     }
 
     svg.append('g')
@@ -366,23 +344,21 @@ export const complexity_by_kind = (kinds, unfiltered_sets, cards, {w, h} = {w:12
             .attr('fill', 'none')
             .attr('stroke', color_for(kind))
             .attr('stroke-width', 3)
+            .attr('visibility', 'hidden')
             .attr('d', d3.line()
                 .x(d => x(d.release))
                 .y(d => y(d.avg))
             )
-            .attr('id', `line-${kind}`)
-            .on('mouseover', mouse_over)
-            .on('mousemove', mouse_move_line)
-            .on('mouseleave', mouse_leave_line);
+            .attr('id', `line-${kind}`);
 
         svg.append('g')
             .selectAll('circle')
             .data(datum)
             .join('circle')
-            .attr('stroke', 'steelblue')
-            .attr('fill', 'currentColor')
+            .attr('stroke', color_for(kind))
+            .attr('fill', color_for(kind))
             .attr('class', `circle-${kind}`)
-            .attr('opacity', 0.25)
+            .attr('opacity', 1)
             .attr('cx', d => x(d.release))
             .attr('cy', d => y(d.avg))
             .attr('r', 3.5)
@@ -405,6 +381,28 @@ export const complexity_by_kind = (kinds, unfiltered_sets, cards, {w, h} = {w:12
                 .y(d => y(d.avg))
             );
     });
+
+    svg.selectAll('legend-dots')
+        .data(kinds)
+        .enter()
+        .append('circle')
+        .attr('cx', 60)
+        .attr('cy', (d, i) => 25 + i * 15)
+        .attr('r', 3)
+        .style('fill', d => color_for(d));
+
+    svg.selectAll('legend-text')
+        .data(kinds)
+        .enter()
+        .append('text')
+        .attr('x', 65)
+        .attr('y', (d, i) => 29 + i * 15)
+        .text(d => d.replaceAll('_', ' '))
+        .attr('text-anchor', 'left')
+        .attr('alignment-baseline', 'middle')
+        .on('mousemove', mouse_move_legend)
+        .on('mouseleave', mouse_leave)
+        .on('click', legend_click);
 
     return svg.node();
 };
