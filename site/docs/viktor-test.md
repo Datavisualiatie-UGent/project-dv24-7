@@ -45,8 +45,15 @@ display(color_per_year_bar(sets, cards_by_sets));
 import {color_per_year_area} from './components/renderers.js';
 display(color_per_year_area(sets, cards_by_sets));
 ```
+
 <br>
 <br>
+
+```js
+import {color_per_year_area_plot} from './components/renderers.js';
+display(color_per_year_area_plot(sets, cards_by_sets));
+```
+
 
 ## Evolution of set size
 ```js
@@ -58,3 +65,29 @@ display(cards_per_set_per_year(sets, cards_by_sets));
 ```js
 import {cards_per_year} from './components/renderers.js';
 display(cards_per_year(sets, cards_by_sets));
+```
+
+## Number of cards per color per type
+```js
+import {cards_color_type} from './components/renderers.js';
+const selector = ['All'];
+selector.push(...sets.map(set => set.name))
+const selected_set_name = view(Inputs.select(selector, {value: "All", label: "Sets", sort: 'ascending'}));
+```
+
+```js
+display(cards_color_type(sets, selected_set_name, cards_by_sets));
+```
+
+
+## Card power vs color
+```js
+import {cards_color_power} from './components/renderers.js';
+const color_list = ['All', 'Black', 'Blue', 'Green', 'Multi', 'Red', 'White']
+const selected_color = view(Inputs.select(color_list, {value: "All", label: "Color", sort: 'ascending'}));
+```
+
+
+```js
+display(cards_color_power(sets, selected_color, cards_by_sets));
+```

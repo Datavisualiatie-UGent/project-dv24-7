@@ -1,4 +1,5 @@
 import * as d3 from 'npm:d3';
+import * as Plot from "npm:@observablehq/plot";
 import regression from 'npm:regression';
 
 const marginTop = 20, marginBottom = 40, marginLeft = 40, marginRight = 20;
@@ -350,6 +351,35 @@ export const color_per_year_bar = (sets, cards, {w, h} = {w:1200, h:600}, {from,
           .attr("width", x.bandwidth())
 
     return svg.node();
+}
+
+export const color_per_year_area_plot = (sets, cards, {w, h} = {w:1200, h:600}, {from, to} = {from:1990, to:2030}, legend_w = 150, area_opacity = 0.75) => {
+    const actual = filter_years(sets, from, to);
+    const year_to_count = [];
+    for(let i = Math.max(from, sets[0].release.getFullYear()); i <= Math.min(to, sets.at(-1).release.getFullYear()); i++) {
+        const year_sets = actual.filter(set => set.release.getFullYear() === i);
+        year_to_count.push(...color_set_year(year_sets, i, cards));
+    }
+
+    return Plot.plot({
+        marginLeft: marginLeft,
+        width: w,
+        color: {
+            type: 'categorical',
+            legend: true,
+
+            range: ['grey', '#a2c933', '#c2270a', '#23171b', '#2aabee', 'white', '#feb927'],
+            domain: ['colorless', 'green', 'red', 'black', 'blue', 'white', 'mixed']
+        },
+        y: {
+          grid: false,
+          label: "↑ Colors in set (ratio)"
+        },
+        marks: [
+          Plot.areaY(year_to_count, {x: "year", y: "color_count", fill: "color", title: "color"}),
+          Plot.ruleY([0])
+        ]
+      });
 }
 
 export const color_per_year_area = (sets, cards, {w, h} = {w:1200, h:600}, {from, to} = {from:1990, to:2030}, legend_w = 150, area_opacity = 0.75) => {
@@ -735,4 +765,173 @@ export const cards_per_year = (sets, cards, {w, h} = {w:1200, h:600}, {from, to}
         );
 
     return svg.node();
+}
+
+const color_and_type = (year_sets, year, cards) => {
+    const color_counts = {
+        colorless: 0,
+        green: 0,
+        red: 0,
+        black: 0,
+        blue: 0,
+        white: 0,
+        mixed: 0,
+    };
+
+    let card_colors = [];
+    let cards_in_set = 0;
+
+    year_sets.forEach(set => {
+        const cards_list = cards[set.code].flat().filter(card => card.colors != null).map(card => card.colors);
+        const double_faced = cards[set.code].flat().filter(card => card.colors == null).map(card => card.card_faces);
+        double_faced.forEach(faces =>{
+            const face_colors = []
+            faces.forEach(face => {
+                face_colors.push(...face.colors);
+            });
+            cards_list.push(face_colors.filter((value, index, array) => array.indexOf(value) === index));
+        });
+        cards_in_set += cards_per_set(cards_list);
+        cards_list.forEach(colors => {
+            if (colors.length == 0) {
+                color_counts.colorless++;
+            } else if (colors.length > 1) {
+                color_counts.mixed++;
+            } else {
+                color_counts[get_color_by_code(colors[0])]++;
+            }
+        });
+    });
+
+    Object.keys(color_counts).forEach(key => {
+        card_colors.push({
+            year: year,
+            color: key,
+            color_count: color_counts[key] / cards_in_set,
+        });
+    });
+    return card_colors;
+}
+
+const get_card_color = (card) => {
+    if (card.colors.length > 1) {
+        return 'multi';
+    } else {
+        return  get_color_by_code(card.colors[0]);
+    }
+}
+
+const get_card_type = (card) => {
+    const card_type_str = (new String(card.type_line)).split(' — ')[0].split(' ')
+    if (card_type_str.length > 1) {
+        return 'multi';
+    } else {
+        return card_type_str[0]
+    }
+}
+
+
+export const cards_color_type = (all_sets, set_name, cards, {w, h} = {w:1200, h:600}, {from, to} = {from:1990, to:2030}, legend_w = 150, area_opacity = 0.75) => {
+    const aggregate = [];
+    const colors = [];
+    const types = [];
+    const used_sets = []
+
+    if (set_name === 'All') {
+        used_sets.push(...all_sets);
+        console.log('true');
+    } else {
+        used_sets.push(...all_sets.filter(set => set.name === set_name));
+        console.log('false');
+    }
+
+    used_sets.forEach(set => {
+        const cards_list = cards[set.code].flat()
+            .filter(card => card.colors != null)
+            .filter(card => card.colors.length != 0)
+            .filter(card => card.type_line != null)
+            .map(card => {
+                const color = get_card_color(card);
+                const type = get_card_type(card);
+                if (!colors.includes(color)) {
+                    colors.push(color)
+                }
+
+                if (!types.includes(type)) {
+                    types.push(type)
+                }
+
+                return {
+                    card: card,
+                    color: color,
+                    type: type
+                }
+        });
+        aggregate.push(...cards_list);
+    })
+
+    return Plot.auto(
+        aggregate,
+        {x: "type", y: "color", color: "count"}).plot({
+            marginLeft: 80,
+            color: {type: 'linear', scheme: "YlGn", legend: true, label: "Card count" },
+            grid: true,
+            x: {label: 'Card type'},
+            y: {label: 'Card color'}
+    })
+}
+
+export const cards_color_power = (all_sets, color_name, cards) => {
+    const aggregate = [];
+    const colors = [];
+    const types = [];
+    const used_cards = [];
+
+    all_sets.forEach(set => {
+        const cards_list = cards[set.code].flat()
+            .filter(card => card.colors != null)
+            .filter(card => card.colors.length != 0)
+            .filter(card => card.type_line != null)
+            .filter(card => card.power != null)
+            .filter(card => !card.power.includes('*'))
+            .filter(card => !card.toughness.includes('*'))
+            .map(card => {
+                const color = get_card_color(card);
+                const type = get_card_type(card);
+                if (!colors.includes(color)) {
+                    colors.push(color)
+                }
+
+                if (!types.includes(type)) {
+                    types.push(type)
+                }
+
+                return {
+                    card: card,
+                    color: color,
+                    type: type,
+                    power: parseInt(card.power),
+                    toughness: parseInt(card.toughness),
+                    count: 1
+                }
+        });
+        aggregate.push(...cards_list);
+    })
+
+    if (color_name.toLowerCase() != 'all') {
+        used_cards.push(...aggregate.filter(card => card.color == color_name.toLowerCase()));
+    } else {
+        used_cards.push(...aggregate);
+    }
+
+    return Plot.auto(
+        used_cards,
+        {x: "power", y: "toughness", color: "color"}).plot({
+            marginLeft: 80,
+            color: {legend: true, label: "Card count" },
+            grid: true,
+            fill_opacity: 'count',
+            x: {label: 'Card toughness'},
+            y: {label: 'Card power'}
+    })
 }
