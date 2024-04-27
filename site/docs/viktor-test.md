@@ -62,8 +62,8 @@ display(color_per_year_area(sets, cards_by_sets));
 <br>
 
 ```js
-import {color_per_year_area_plot} from './components/renderers.js';
-display(color_per_year_area_plot(sets, cards_by_sets));
+// import {color_per_year_area_plot} from './components/renderers.js';
+// display(color_per_year_area_plot(sets, cards_by_sets));
 ```
 
 ```js

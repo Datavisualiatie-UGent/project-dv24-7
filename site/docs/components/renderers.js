@@ -1,6 +1,5 @@
 import * as d3 from 'npm:d3';
 import * as Plot from "npm:@observablehq/plot";
-import regression from 'npm:regression';
 
 const marginTop = 20, marginBottom = 40, marginLeft = 40, marginRight = 20;
 
@@ -901,4 +900,20 @@ export const cards_rarity_toughness = (all_sets, color_name, cards) => {
                 ))
         ]
       })
+}
+
+export const word_cloud = (cards) => {
+    const cards_flat = [];
+    Object.keys(cards).forEach(key => {
+        cards[key].forEach(card => card.forEach(c => cards_flat.push(...c.name.split(' '))));
+    })
+
+    const data = []
+    cards_flat.forEach(card => {
+        data.push({
+            name: card,
+            count: 1
+        })
+    })
+    return Plot.auto(data, {x: "name", y: "count"}).plot()
 }
