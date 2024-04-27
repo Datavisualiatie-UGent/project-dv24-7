@@ -815,7 +815,7 @@ const color_and_type = (year_sets, year, cards) => {
 
 const get_card_color = (card) => {
     if (card.colors.length > 1) {
-        return 'multi';
+        return 'mixed';
     } else {
         return  get_color_by_code(card.colors[0]);
     }
@@ -831,21 +831,12 @@ const get_card_type = (card) => {
 }
 
 
-export const cards_color_type = (all_sets, set_name, cards, {w, h} = {w:1200, h:600}, {from, to} = {from:1990, to:2030}, legend_w = 150, area_opacity = 0.75) => {
+export const cards_color_type = (sets, cards, {w, h} = {w:1200, h:600}, {from, to} = {from:1990, to:2030}, legend_w = 150, area_opacity = 0.75) => {
     const aggregate = [];
     const colors = [];
     const types = [];
-    const used_sets = []
 
-    if (set_name === 'All') {
-        used_sets.push(...all_sets);
-        console.log('true');
-    } else {
-        used_sets.push(...all_sets.filter(set => set.name === set_name));
-        console.log('false');
-    }
-
-    used_sets.forEach(set => {
+    sets.forEach(set => {
         const cards_list = cards[set.code].flat()
             .filter(card => card.colors != null)
             .filter(card => card.colors.length != 0)
@@ -881,11 +872,22 @@ export const cards_color_type = (all_sets, set_name, cards, {w, h} = {w:1200, h:
     })
 }
 
-export const cards_color_power = (all_sets, color_name, cards) => {
+const color_scheme_map = (color_name) => {
+    const map = {
+        colorless: 'Viribdis',
+        green: 'Greens',
+        red: 'Reds',
+        black: 'Greys',
+        blue: 'Blues',
+        white: 'YlOrBr',
+        mixed: 'Purples',
+        all: 'cool'
+    }
+    return map[color_name.toLowerCase()];
+}
+
+const get_color_dataset = (all_sets, color_name, cards) => {
     const aggregate = [];
-    const colors = [];
-    const types = [];
-    const used_cards = [];
 
     all_sets.forEach(set => {
         const cards_list = cards[set.code].flat()
@@ -898,40 +900,111 @@ export const cards_color_power = (all_sets, color_name, cards) => {
             .map(card => {
                 const color = get_card_color(card);
                 const type = get_card_type(card);
-                if (!colors.includes(color)) {
-                    colors.push(color)
-                }
-
-                if (!types.includes(type)) {
-                    types.push(type)
-                }
 
                 return {
                     card: card,
                     color: color,
                     type: type,
-                    power: parseInt(card.power),
-                    toughness: parseInt(card.toughness),
+                    power: parseFloat(card.power),
+                    toughness: parseFloat(card.toughness),
+                    rarity: card.rarity,
                     count: 1
                 }
         });
         aggregate.push(...cards_list);
     })
 
-    if (color_name.toLowerCase() != 'all') {
-        used_cards.push(...aggregate.filter(card => card.color == color_name.toLowerCase()));
+    let reduced;
+    if (color_name != 'All') {
+        reduced = aggregate.filter(card => card.color == color_name.toLowerCase())
     } else {
-        used_cards.push(...aggregate);
+        reduced = aggregate;
     }
+    return reduced
+}
 
-    return Plot.auto(
-        used_cards,
-        {x: "power", y: "toughness", color: "color"}).plot({
-            marginLeft: 80,
-            color: {legend: true, label: "Card count" },
-            grid: true,
-            fill_opacity: 'count',
-            x: {label: 'Card toughness'},
-            y: {label: 'Card power'}
-    })
+export const cards_color_power = (all_sets, color_name, cards) => {
+    const dataset = get_color_dataset(all_sets, color_name, cards);
+    const max_power = Math.max(...dataset.map(card => card.power));
+    const max_toughness = Math.max(...dataset.map(card => card.toughness));
+
+    return Plot.plot({
+        grid: true,
+        color: {legend: true, scheme: color_scheme_map(color_name)},
+        marginLeft: 60,
+        marginRight: 70,
+        x: {label: "Power", type: 'linear'},
+        y: {label: "Toughness", type: 'linear'},
+        r: {range: [2, 10]},
+        marks: [
+            Plot.link(
+                [0.6, 0.7, 0.8, 0.9, 1], 
+                {
+                x1: -0.5,
+                y1: -0.5,
+                x2: max_power+0.5,
+                y2: max_toughness+0.5,
+                strokeOpacity: 0.2
+              }
+            ),
+            Plot.text(
+                [{power: max_power+0.5, toughness: max_toughness+0.5, text: 'Perfect ratio'}], 
+                {
+                x: 'power',
+                y: 'toughness',
+                text: 'text',
+                textAnchor: "start",
+                dx: 5
+                }
+            ),
+            Plot.dot(
+                dataset,
+                {
+                ...Plot.bin(
+                    {r: 'count', fill: 'count', x: 'min', y: 'min'}, 
+                    {x: "power", y: "toughness", stroke: 'black', tip: true, interval: 1, inset: 0.5},
+                ),
+                // fill: 'red'
+                }
+            )
+        ]
+      });
+}
+
+export const cards_rarity_power = (all_sets, color_name, cards) => {
+    const dataset = get_color_dataset(all_sets, color_name, cards);
+    return Plot.plot({
+        marginLeft: 100,
+        padding: 0,
+        x: {grid: true},
+        fy: {domain: ['common', 'uncommon', 'rare', 'mythic', 'special']},
+        color: {legend: true, scheme: color_scheme_map(color_name)},
+        marks: [
+            Plot.rect(
+                dataset, 
+                Plot.binX(
+                    {fill: "count", x: 'min'}, 
+                    {x: "power", fy: "rarity", inset: 0.1, interval: 1, tip: true}
+                ))
+        ]
+      })
+}
+
+export const cards_rarity_toughness = (all_sets, color_name, cards) => {
+    const dataset = get_color_dataset(all_sets, color_name, cards);
+    return Plot.plot({
+        marginLeft: 100,
+        padding: 0,
+        x: {grid: true},
+        fy: {domain: ['common', 'uncommon', 'rare', 'mythic', 'special']},
+        color: {legend: true, scheme: color_scheme_map(color_name)},
+        marks: [
+            Plot.rect(
+                dataset, 
+                Plot.binX(
+                    {fill: "count", x: 'min'}, 
+                    {x: "toughness", fy: "rarity", inset: 0.1, interval: 1, tip: true}
+                ))
+        ]
+      })
 }

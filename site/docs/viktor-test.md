@@ -33,6 +33,19 @@ const load_cards = async () => {
     return cards;
 };
 const cards_by_sets = await load_cards();
+
+const set_selector_filter = (all_sets, selected_set) => {
+    const used_sets = []
+
+    if (selected_set === 'All') {
+        used_sets.push(...all_sets);
+        console.log('true');
+    } else {
+        used_sets.push(...all_sets.filter(set => set.name === selected_set));
+        console.log('false');
+    }
+    return used_sets;
+}
 ```
 
 ## Evolution of color distribution
@@ -71,23 +84,37 @@ display(cards_per_year(sets, cards_by_sets));
 ```js
 import {cards_color_type} from './components/renderers.js';
 const selector = ['All'];
-selector.push(...sets.map(set => set.name))
-const selected_set_name = view(Inputs.select(selector, {value: "All", label: "Sets", sort: 'ascending'}));
+selector.push(...sets.map(set => set.name).sort())
+const selected_set_name = view(Inputs.select(selector, {value: "All", label: "Sets"}));
 ```
 
 ```js
-display(cards_color_type(sets, selected_set_name, cards_by_sets));
+display(cards_color_type(set_selector_filter(sets, selected_set_name), cards_by_sets));
 ```
 
 
-## Card power vs color
+## Power vs Toughness per color
 ```js
 import {cards_color_power} from './components/renderers.js';
-const color_list = ['All', 'Black', 'Blue', 'Green', 'Multi', 'Red', 'White']
-const selected_color = view(Inputs.select(color_list, {value: "All", label: "Color", sort: 'ascending'}));
+const color_list = ['All', 'Red', 'Blue', 'Green', 'White', 'Black', 'Mixed'];
+const selected_color_2 = view(Inputs.select(color_list, {label: "Color", value: "Red",}));
+const selected_set_name_2 = view(Inputs.select(selector, {value: "All", label: "Sets"}));
 ```
 
 
 ```js
-display(cards_color_power(sets, selected_color, cards_by_sets));
+display(cards_color_power(set_selector_filter(sets, selected_set_name_2), selected_color_2, cards_by_sets));
+```
+
+## Power and Toughness vs color
+```js
+import {cards_rarity_power, cards_rarity_toughness} from './components/renderers.js';
+const selected_color_3 = view(Inputs.select(color_list, {label: "Color", value: "Red",}));
+const selected_set_name_3 = view(Inputs.select(selector, {value: "All", label: "Sets"}));
+```
+
+
+```js
+display(cards_rarity_power(set_selector_filter(sets, selected_set_name_3), selected_color_3, cards_by_sets));
+display(cards_rarity_toughness(set_selector_filter(sets, selected_set_name_3), selected_color_3, cards_by_sets));
 ```
