@@ -54,3 +54,20 @@ export const set_selector_filter = (all_sets, selected_set) => {
     }
     return used_sets;
 }
+
+export const get_card_color = (card) => {
+    if (card.colors.length > 1) {
+        return 'mixed';
+    } else {
+        return  get_color_by_code(card.colors[0]);
+    }
+}
+
+export const get_card_type = (card) => {
+    const card_type_str = (new String(card.type_line)).split(' — ')[0].split(' ')
+    if (card_type_str.length > 1) {
+        return 'Multi';
+    } else {
+        return card_type_str[0]
+    }
+}

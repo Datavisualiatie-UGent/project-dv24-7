@@ -14,6 +14,11 @@ display(color_per_year_bar(sets, cards_by_sets));
 ```
 
 ```js
+// import {color_per_year_bar_plot} from './components/evolution.js';
+// display(color_per_year_bar_plot(sets, cards_by_sets));
+```
+
+```js
 import {color_per_year_area} from './components/evolution.js';
 display(color_per_year_area(sets, cards_by_sets));
 ```
@@ -33,8 +38,9 @@ display(rarity_per_year_area(sets, cards_by_sets));
 
 ## Reprints vs New Cards
 ```js
-import {reprints_bar, reprints_bar_normal} from './components/evolution.js';
+import {reprints_bar, reprints_bar_normal, reprints_area_normal} from './components/evolution.js';
 display(html`<div style="display: grid; grid-template-columns: 1fr 1fr; column-gap: 20px; row-gap: 20px;">${reprints_bar(sets, cards_by_sets)}${reprints_bar_normal(sets, cards_by_sets)}</div>`)
+display(reprints_area_normal(sets, cards_by_sets))
 ```
 
 ## Evolution of set size

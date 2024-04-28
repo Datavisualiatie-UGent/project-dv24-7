@@ -45,6 +45,8 @@ const color_set_year = (year_sets, year, cards) => {
             year: year,
             color: key,
             color_count: color_counts[key] / cards_in_set,
+            map: color_counts,
+            total: cards_in_set
         });
     });
     return card_colors;
@@ -109,7 +111,73 @@ export const color_per_year_bar = (sets, cards, {w, h} = {w:1200, h:600}, {from,
     return svg.node();
 }
 
-export const color_per_year_area_plot = (sets, cards, {w, h} = {w:1200, h:600}, {from, to} = {from:1990, to:2030}, legend_w = 150, area_opacity = 0.75) => {
+export const color_per_year_area_plot = (sets, cards, {w, h} = {w:800, h:400}, {from, to} = {from:1990, to:2030}, legend_w = 150, area_opacity = 0.75) => {
+    const actual = filter_years(sets, from, to);
+    const year_to_count = [];
+    for(let i = Math.max(from, sets[0].release.getFullYear()); i <= Math.min(to, sets.at(-1).release.getFullYear()); i++) {
+        const year_sets = actual.filter(set => set.release.getFullYear() === i);
+        year_to_count.push(...color_set_year(year_sets, i, cards));
+    }
+    return Plot.plot({
+        marginLeft: marginLeft,
+        width: w,
+        height: h,
+        color: {
+            type: 'categorical',
+            legend: true,
+            label: 'Color',
+            range: ['#C4D0D0', '#F09EA7', '#FAFABE', '#C1EBC0', '#C7CAFF', '#CDABEB', '#F6C2F3'],
+            domain: ['black', 'red', 'white', 'green', 'blue', 'mixed', 'colorless']
+        },
+        x: {
+            label: "Time [year]",
+            interval: 1,
+            tickFormat: d => new String(d)
+        },
+        y: {
+            grid: false,
+            label: "↑ Colors in set  [%]",
+            percent: true
+        },
+        marks: [
+          Plot.areaY(
+            year_to_count, {
+                x: "year", 
+                y: "color_count", 
+                fill: "color", 
+                channels: {
+                    year: {value: d => new String(d.year), label: 'Year'},
+                    black: {value: d => `${d.map.black} - ${(d.map.black * 100 / d.total).toFixed(2)}%`, label: 'Black'},
+                    red: {value: d => `${d.map.red} - ${(d.map.red * 100 / d.total).toFixed(2)}%`, label: 'Red'},
+                    white: {value: d => `${d.map.white} - ${(d.map.white * 100 / d.total).toFixed(2)}%`, label: 'White'},
+                    green: {value: d => `${d.map.green} - ${(d.map.green * 100 / d.total).toFixed(2)}%`, label: 'Green'},
+                    blue: {value: d => `${d.map.blue} - ${(d.map.blue * 100 / d.total).toFixed(2)}%`, label: 'Blue'},
+                    mixed: {value: d => `${d.map.mixed} - ${(d.map.mixed * 100 / d.total).toFixed(2)}%`, label: 'Mixed'},
+                    colorless: {value: d => `${d.map.colorless} - ${(d.map.colorless * 100 / d.total).toFixed(2)}%`, label: 'Colorless'},
+                },
+                tip: {
+                    format: {
+                        x: false,
+                        y: false,
+                        fill: false,
+                        year: true,
+                        black: true,
+                        red: true,
+                        white: true,
+                        green: true,
+                        blue: true,
+                        mixed: true,
+                        colorless: true,
+                    }
+                },
+                order: ['black', 'red', 'white', 'green', 'blue', 'mixed', 'colorless'],
+            }),
+          Plot.ruleY([0])
+        ]
+      });
+}
+
+export const color_per_year_bar_plot = (sets, cards, {w, h} = {w:800, h:400}, {from, to} = {from:1990, to:2030}, legend_w = 150, area_opacity = 0.75) => {
     const actual = filter_years(sets, from, to);
     const year_to_count = [];
     for(let i = Math.max(from, sets[0].release.getFullYear()); i <= Math.min(to, sets.at(-1).release.getFullYear()); i++) {
@@ -120,19 +188,21 @@ export const color_per_year_area_plot = (sets, cards, {w, h} = {w:1200, h:600}, 
     return Plot.plot({
         marginLeft: marginLeft,
         width: w,
+        height: h,
         color: {
             type: 'categorical',
             legend: true,
 
-            range: ['grey', '#a2c933', '#c2270a', '#23171b', '#2aabee', 'white', '#feb927'],
-            domain: ['colorless', 'green', 'red', 'black', 'blue', 'white', 'mixed']
+            range: ['#C4D0D0', '#F09EA7', '#FAFABE', '#C1EBC0', '#C7CAFF', '#CDABEB', '#F6C2F3'],
+            domain: ['black', 'red', 'white', 'green', 'blue', 'mixed', 'colorless']
         },
+        x: {tickFormat: d => new String(d), interval: 1, label: "Time [year]"},
         y: {
           grid: false,
           label: "↑ Colors in set (ratio)"
         },
         marks: [
-          Plot.areaY(year_to_count, {x: "year", y: "color_count", fill: "color", title: "color", tip: "x"}),
+          Plot.barY(year_to_count, {x: "year", y: "color_count", fill: "color", title: "color", tip: "x", order: ['black', 'red', 'white', 'green', 'blue', 'mixed', 'colorless']}),
           Plot.ruleY([0])
         ]
       });
@@ -738,6 +808,25 @@ export const reprints_bar_normal = (sets, cards, {from, to} = {from:1990, to:203
                     time: true,
                     }
                 }
+            }),
+          Plot.ruleY([0]),
+        ]
+      })
+}
+
+export const reprints_area_normal = (sets, cards, {from, to} = {from:1990, to:2030}) => {
+    const data = data_reprints_vs_new(sets, cards, from, to);
+    return Plot.plot({
+        x: {tickFormat: "", interval: 1, label: "Time [year]", dx: 1},
+        y: {label: "Fraction of cards [%]", grid: true, percent: true},
+        color: {legend: true, scheme: "Spectral", label: "Release type"},
+        marks: [
+          Plot.areaY(data, {
+                x: "year", 
+                y: "count", 
+                fill:'type', 
+                width:10, 
+                offset: "normalize",
             }),
           Plot.ruleY([0]),
         ]

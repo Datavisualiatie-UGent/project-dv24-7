@@ -1,23 +1,5 @@
 import * as Plot from "npm:@observablehq/plot";
-import {get_color_by_code, color_scheme_map} from './utils.js';
-
-
-const get_card_color = (card) => {
-    if (card.colors.length > 1) {
-        return 'mixed';
-    } else {
-        return  get_color_by_code(card.colors[0]);
-    }
-}
-
-const get_card_type = (card) => {
-    const card_type_str = (new String(card.type_line)).split(' — ')[0].split(' ')
-    if (card_type_str.length > 1) {
-        return 'Multi';
-    } else {
-        return card_type_str[0]
-    }
-}
+import {get_card_color, get_card_type} from './utils.js';
 
 
 export const cards_color_type = (sets, cards) => {

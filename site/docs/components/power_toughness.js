@@ -1,5 +1,5 @@
 import * as Plot from "npm:@observablehq/plot";
-import {color_scheme_map} from './utils.js';
+import {color_scheme_map, get_card_color, get_card_type} from './utils.js';
 
 const calculate_mana = (mana_cost) => {
     const mana_vals  = mana_cost.split('}').map(val => val.replace('{', ''))
