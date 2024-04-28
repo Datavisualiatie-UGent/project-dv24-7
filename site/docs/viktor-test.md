@@ -131,6 +131,23 @@ selected_color_4.forEach(color => {
 display(html`<div style="display: grid; grid-template-columns: 1fr 1fr; column-gap: 20px; row-gap: 20px;">${plots_toughness}</div>`)
 ```
 
+## Card prices
+```js
+import {card_prices} from './components/renderers.js';
+const selected_set_name_5 = view(Inputs.select(selector, {value: "All", label: "Sets"}));
+const prices_order = view(Inputs.select(['Ascending', 'Descending'], {value: "Descending", label: "Order"}));
+const number_prices = view(
+  Inputs.range(
+    [1, 100],
+    {step: 1, value: 25, label: 'Number of cards'}
+  )
+);
+```
+
+```js
+display(card_prices(set_selector_filter(sets, selected_set_name_5), cards_by_sets, parseInt(number_prices), prices_order));
+```
+
 ## Evolution of set size
 ```js
 import {cards_per_set_per_year} from './components/renderers.js';

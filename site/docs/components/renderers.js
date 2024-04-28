@@ -638,7 +638,7 @@ export const rarity_per_year_area = (sets, cards, {w, h} = {w:1200, h:600}, {fro
     return svg.node();
 }
 
-export const cards_per_set_per_year = (sets, cards, {w, h} = {w:1200, h:600}, {from, to} = {from:1990, to:2030}) => {
+export const cards_per_set_per_year = (sets, cards, {from, to} = {from:1990, to:2030}) => {
     const actual = [];
     filter_years(sets, from, to).sort((a, b) => a.release - b.release).forEach(set => {
         const cards_list = cards[set.code].flat();
@@ -864,13 +864,35 @@ export const cards_color_power = (all_sets, color_name, cards) => {
       });
 }
 
+const rarity_domain = (dataset) => {
+    const rarities = ['common', 'uncommon', 'rare', 'mythic', 'special']
+    const found_rarities = [];
+    const used_rarities = []
+    dataset.forEach(card => {
+        if (!found_rarities.includes(card.rarity)) {
+            found_rarities.push(card.rarity);
+        }
+    })
+
+    if (found_rarities.length == 0) {
+        return rarities
+    }
+
+    rarities.forEach(rarity => {
+        if (found_rarities.includes(rarity)) {
+            used_rarities.push(rarity)
+        }
+    })
+    return used_rarities;
+}
+
 export const cards_rarity_power = (all_sets, color_name, cards) => {
     const dataset = get_color_dataset(all_sets, color_name, cards);
     return Plot.plot({
         marginLeft: 100,
         padding: 0,
         x: {grid: true,  domain: Array.from({length: 20}, (_, i) => i-1)},
-        fy: {domain: ['common', 'uncommon', 'rare', 'mythic', 'special', 'bonus']},
+        fy: {domain: rarity_domain(dataset)},
         color: {legend: true, scheme: color_scheme_map(color_name)},
         marks: [
             Plot.rect(
@@ -889,7 +911,7 @@ export const cards_rarity_toughness = (all_sets, color_name, cards) => {
         marginLeft: 100,
         padding: 0,
         x: {grid: true, domain: Array.from({length: 18}, (_, i) => i)},
-        fy: {domain: ['common', 'uncommon', 'rare', 'mythic', 'special', 'bonus']},
+        fy: {domain: rarity_domain(dataset)},
         color: {legend: true, scheme: color_scheme_map(color_name)},
         marks: [
             Plot.rect(
@@ -898,6 +920,74 @@ export const cards_rarity_toughness = (all_sets, color_name, cards) => {
                     {fill: "count", x: 'min'}, 
                     {x: "toughness", fy: "rarity", inset: 0.1, interval: 1, tip: true}
                 ))
+        ]
+      })
+}
+
+export const card_prices = (all_sets, cards, n, order) => {
+    const test = []
+
+    const dataset = [];
+    all_sets.forEach(set => {
+        const cards_list = cards[set.code].flat().filter(card => card.prices != null).filter(card => card.prices.eur != null).map(card => {
+            const addition = card.reprint ? ' : ' + card.set_name : ''
+            return {
+                card_name: card.name,
+                name: card.name + addition,
+                price: parseFloat(card.prices.eur),
+                set_name: set.name
+            }
+        });
+        dataset.push(...cards_list);
+    })
+
+    const selected_data = dataset.sort((a, b) => b.price - a.price);
+    if (selected_data.length == 0) return Plot.plot();
+
+    const sorted_data = selected_data.slice(0, selected_data.length > n ? n: selected_data.length)
+
+    return Plot.plot({
+        marginLeft: 250,
+        marginRight: 100,
+        width: 1000,
+        x: {
+          axis: "top",
+          grid: true,
+          label: 'Price [€]',
+          type: 'linear',
+          domain: [0, selected_data[0].price]
+        },
+        y: {
+            label: 'Card name'
+        },
+        marks: [
+            Plot.ruleX([0]),
+            Plot.barX(
+                sorted_data, 
+                {
+                    x: "price", 
+                    y: "name", 
+                    sort: {y: "x", reverse: order == 'Descending' ? true : false},
+                    channels: {
+                        card_name: {value: "card_name", label: "Card"},
+                        set_name: {value: "set_name", label: "Set"}
+                    },
+                    tip: {format: {
+                        card_name: true,
+                        price: true,
+                        set_name: true,
+                        y: false
+                    }}
+                }
+            ),
+            Plot.text(sorted_data, {
+                text: d => `€ ${d.price} `,
+                x: d => d.price,
+                y: d => d.name,
+                textAnchor: "start",
+                dx: 3,
+                fill: "black"
+            })
         ]
       })
 }
