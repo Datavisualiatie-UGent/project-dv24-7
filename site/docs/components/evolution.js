@@ -737,97 +737,50 @@ const data_reprints_vs_new = (sets, cards, from, to) => {
     return year_to_count;
 }
 
-export const reprints_bar = (sets, cards, {from, to} = {from:1990, to:2030}) => {
+export const reprints = (sets, cards, plot_type='bar', normalized=false, {from, to} = {from:1990, to:2030}) => {
     const data = data_reprints_vs_new(sets, cards, from, to);
-    return Plot.plot({
-        x: {tickFormat: "", interval: 1, label: "Time [year]", dx: 1},
-        y: {label: "Number of cards", grid: true},
-        color: {legend: true, scheme: "Spectral", label: "Release type"},
-        marks: [
-          Plot.barY(data, {
-                x: "year", 
-                y: "count", 
-                fill:'type', 
-                width:10,
-                channels: {
-                    count_total: {value: "total", label: "Total number of Cards"},
-                    percent_new: {value: d => `${((d.count_new / d.total)*100).toFixed(2)}%`, label: 'Fraction of New Cards'},
-                    percent_reprint: {value: d => `${((d.count_new / d.total)*100).toFixed(2)}%`, label: 'Fraction of Reprints'},
-                    count_new: {value: "count_new", label: "Number of New Cards"},
-                    count_reprint: {value: "count_reprint", label: "Number of Reprints"},
-                    time: {value: d => `${d.year}`, label: "Year"},
-                },
-                tip: {format: {
-                    count_total: true,
-                    percent_new: true,
-                    percent_reprint: true,
-                    count_new: true,
-                    count_reprint: true,
-                    x: false,
-                    y: false,
-                    fill: false,
-                    time: true,
-                    }
-                }
-        }),
-          Plot.ruleY([0]),
-        ]
-      })
-}
 
-export const reprints_bar_normal = (sets, cards, {from, to} = {from:1990, to:2030}) => {
-    const data = data_reprints_vs_new(sets, cards, from, to);
+    const config = {
+        x: "year", 
+        y: "count", 
+        fill:'type', 
+        width:10, 
+        channels: {
+            count_total: {value: "total", label: "Total number of Cards"},
+            new: {value: d => `${d.count_new} - ${((d.count_new / d.total)*100).toFixed(2)}%`, label: 'New Cards'},
+            reprint: {value: d => `${d.count_reprint} - ${((d.count_reprint / d.total)*100).toFixed(2)}%`, label: 'Reprints'},
+            time: {value: d => `${d.year}`, label: "Year"},
+        },
+        tip: {format: {
+            count_total: true,
+            new: true,
+            reprint: true,
+            time: true,
+            x: false,
+            y: false,
+            fill: false,
+            }
+        }
+    }
+
+    if (normalized) {
+        config.offset = "normalize"
+    }
+
+    let plt;
+    if (plot_type == 'bar') {
+        plt = Plot.barY(data, config)
+    } else if (plot_type == 'area') {
+        plt = Plot.areaY(data, config)
+    }
+
+
     return Plot.plot({
         x: {tickFormat: "", interval: 1, label: "Time [year]", dx: 1},
         y: {label: "Fraction of cards [%]", grid: true, percent: true},
         color: {legend: true, scheme: "Spectral", label: "Release type"},
         marks: [
-          Plot.barY(data, {
-                x: "year", 
-                y: "count", 
-                fill:'type', 
-                width:10, 
-                offset: "normalize",
-                channels: {
-                    count_total: {value: "total", label: "Total number of Cards"},
-                    percent_new: {value: d => `${((d.count_new / d.total)*100).toFixed(2)}%`, label: 'Fraction of New Cards'},
-                    percent_reprint: {value: d => `${((d.count_new / d.total)*100).toFixed(2)}%`, label: 'Fraction of Reprints'},
-                    count_new: {value: "count_new", label: "Number of New Cards"},
-                    count_reprint: {value: "count_reprint", label: "Number of Reprints"},
-                    time: {value: d => `${d.year}`, label: "Year"},
-                },
-                tip: {format: {
-                    count_total: true,
-                    percent_new: true,
-                    percent_reprint: true,
-                    count_new: true,
-                    count_reprint: true,
-                    x: false,
-                    y: false,
-                    fill: false,
-                    time: true,
-                    }
-                }
-            }),
-          Plot.ruleY([0]),
-        ]
-      })
-}
-
-export const reprints_area_normal = (sets, cards, {from, to} = {from:1990, to:2030}) => {
-    const data = data_reprints_vs_new(sets, cards, from, to);
-    return Plot.plot({
-        x: {tickFormat: "", interval: 1, label: "Time [year]", dx: 1},
-        y: {label: "Fraction of cards [%]", grid: true, percent: true},
-        color: {legend: true, scheme: "Spectral", label: "Release type"},
-        marks: [
-          Plot.areaY(data, {
-                x: "year", 
-                y: "count", 
-                fill:'type', 
-                width:10, 
-                offset: "normalize",
-            }),
+          plt,
           Plot.ruleY([0]),
         ]
       })
@@ -836,18 +789,53 @@ export const reprints_area_normal = (sets, cards, {from, to} = {from:1990, to:20
 const set_type_data = (sets, from, to) => {
     const actual = filter_years(sets, from, to);
     const year_to_count = [];
+    const types = new Set(sets.map(set => set.set_type.replace('_', ' ')))
+
     for(let i = Math.max(from, sets[0].release.getFullYear()); i <= Math.min(to, sets.at(-1).release.getFullYear()); i++) {
         const year_sets = actual.filter(set => set.release.getFullYear() === i);
-        year_sets.forEach(set => year_to_count.push({
-            year: i,
-            type: set.set_type.replace('_', ' ')
-        })); 
+        const set_type_data = {}
+        types.forEach(type => set_type_data[type] = 0)
+
+        year_sets.forEach(set => {
+            const type = set.set_type.replace('_', ' ');
+            set_type_data[type]++;
+        });
+
+        types.forEach(type => {
+            year_to_count.push({
+                year: i,
+                count: set_type_data[type],
+                type: type
+            })
+        })
+        
     }
     return year_to_count;
 }
 
-export const set_type = (sets, {from, to} = {from:1990, to:2030}) => {
+export const set_type = (sets, plot_type='bar', normalized=false, {from, to} = {from:1990, to:2030}) => {
     const data = set_type_data(sets, from, to)
+
+    const config = {
+        x: "year",
+        y: "count",
+        fill: "type", 
+        tip: true,
+        order: 'sum',
+        reverse: true
+    }
+
+    if (normalized) {
+        config.offset = 'normalize'
+    }
+
+    let plt;
+    if (plot_type == 'bar') {
+        plt = Plot.barY(data, config)
+    } else if (plot_type == 'area') {
+        plt = Plot.areaY(data, config)
+    }
+
     return Plot.plot({
         width: 928,
         height: 500,
@@ -855,32 +843,12 @@ export const set_type = (sets, {from, to} = {from:1990, to:2030}) => {
         y: {label: "Number of sets", grid: true, percent: true},
         color: {legend: true},
         marks: [
-          Plot.barY(data, Plot.groupX(
-            {y: "count"}, 
-            {x: "year", fill: "type", tip: true}
-        ))
+          plt
         ]
       })
 }
 
-export const set_type_normal = (sets, {from, to} = {from:1990, to:2030}) => {
-    const data = set_type_data(sets, from, to)
-    return Plot.plot({
-        width: 928,
-        height: 500,
-        x: {tickFormat: "", interval: 1, label: "Time [year]", dx: 1},
-        y: {label: "Fraction of sets [%]", grid: true, percent: true},
-        color: {legend: true},
-        marks: [
-          Plot.barY(data, Plot.groupX(
-            {y: "count"}, 
-            {x: "year", fill: "type", tip: true, offset: 'normalize'}
-        ))
-        ]
-      })
-}
-
-export const set_type_bar = (sets, {from, to} = {from:1990, to:2030}) => {
+export const set_type_dist = (sets, {from, to} = {from:1990, to:2030}) => {
     const data = set_type_data(sets, from, to)
     return Plot.plot({
         x: {label: 'Set type'},
@@ -889,10 +857,15 @@ export const set_type_bar = (sets, {from, to} = {from:1990, to:2030}) => {
         marginBottom: 50,
         color: {legend: true},
         marks: [
-          Plot.barY(data, Plot.groupX(
-            {y: 'count'},
-            {x: "type", tip: true, sort: {x: "y", reverse: true}, fill:'#4e79a7', insetLeft: 5, insetRight: 5}
-        ))
+          Plot.barY(data, {
+            x: "type", 
+            y: 'count',
+            tip: false,
+            sort: {x: "y", reverse: true}, 
+            fill:'#4e79a7', 
+            insetLeft: 5, 
+            insetRight: 5
+        })
         ]
       })
 }

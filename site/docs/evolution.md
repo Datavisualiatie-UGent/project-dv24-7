@@ -38,9 +38,9 @@ display(rarity_per_year_area(sets, cards_by_sets));
 
 ## Reprints vs New Cards
 ```js
-import {reprints_bar, reprints_bar_normal, reprints_area_normal} from './components/evolution.js';
-display(html`<div style="display: grid; grid-template-columns: 1fr 1fr; column-gap: 20px; row-gap: 20px;">${reprints_bar(sets, cards_by_sets)}${reprints_bar_normal(sets, cards_by_sets)}</div>`)
-display(reprints_area_normal(sets, cards_by_sets))
+import {reprints} from './components/evolution.js';
+display(html`<div style="display: grid; grid-template-columns: 1fr 1fr; column-gap: 20px; row-gap: 20px;">${reprints(sets, cards_by_sets, 'bar')}${reprints(sets, cards_by_sets, 'bar', true)}</div>`)
+display(html`<div style="display: grid; grid-template-columns: 1fr 1fr; column-gap: 20px; row-gap: 20px;">${reprints(sets, cards_by_sets, 'area', )}${reprints(sets, cards_by_sets, 'area', true)}</div>`)
 ```
 
 ## Evolution of set size
@@ -52,9 +52,10 @@ display(cards_per_set_per_year(sets, cards_by_sets));
 ## Evolution of set type
 ```js
 
-import {set_type, set_type_normal, set_type_bar} from './components/evolution.js';
-display(html`<div style="display: grid; grid-template-columns: 1fr 1fr; column-gap: 20px; row-gap: 20px;">${set_type(sets)}${set_type_normal(sets)}</div>`)
-display(set_type_bar(sets))
+import {set_type_dist, set_type} from './components/evolution.js';
+display(html`<div style="display: grid; grid-template-columns: 1fr 1fr; column-gap: 20px; row-gap: 20px;">${set_type(sets, 'bar')}${set_type(sets, 'bar', true)}</div>`)
+display(html`<div style="display: grid; grid-template-columns: 1fr 1fr; column-gap: 20px; row-gap: 20px;">${set_type(sets, 'area')}${set_type(sets, 'area', true)}</div>`)
+display(set_type_dist(sets))
 ```
 
 ## Number of cards released per year
