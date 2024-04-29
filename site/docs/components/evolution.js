@@ -61,7 +61,7 @@ export const color_per_year_bar = (sets, cards, {w, h} = {w:1200, h:600}, {from,
     const data = year_to_count;
     const subgroups = d3.union(data.map(d => d.color));
 
-    var series = d3.stack()
+    const series = d3.stack()
         .keys(subgroups)
         .value(([, group], key) => group.get(key).color_count)
         (d3.index(data, d => d.year, d => d.color));

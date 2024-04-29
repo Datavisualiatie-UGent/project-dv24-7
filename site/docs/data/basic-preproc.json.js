@@ -1,6 +1,8 @@
 import {readFile} from 'node:fs/promises';
 import {fileURLToPath} from 'node:url';
+import {filter_years, cards_per_set, get_color_by_code} from "../components/utils.js";
 
+//region constants/utility
 const url_pre = '../../scraper/out/';
 
 const exclude_always = [ 'minigame', 'token', 'promo', 'memorabilia', 'treasure_chest', 'vanguard' ];
@@ -22,7 +24,9 @@ const exclude = (sets) => {
         set.parent_set_code === undefined && !exclude_between.includes(set.set_type)
     );
 };
+//endregion
 
+//region raw data loading
 const loaded = await readFile(fileURLToPath(import.meta.resolve(`${url_pre}sets.json`)));
 const sets_raw = add_date_sort(JSON.parse(loaded).data)
     .filter(set => !exclude_always.includes(set.set_type));
@@ -42,7 +46,9 @@ const load_cards = async () => {
 }
 
 const cards = await load_cards();
+//endregion
 
+//region timing data
 const diff_months = (d1, d2) => {
     let months;
     months = (d2.getFullYear() - d1.getFullYear()) * 12;
@@ -69,7 +75,9 @@ for(let i = sets_filtered[0].release.getFullYear(); i <= sets_filtered.at(-1).re
     });
     per_year.push({ year: i, count: year_sets.length });
 }
+//endregion
 
+//region complexity data
 const complexity_by_kind = {};
 set_kinds.forEach(kind => complexity_by_kind[kind] = []);
 
@@ -103,7 +111,58 @@ const complexity_raw = sets_filtered.map(set => {
         avg: avg
     }
 });
+//endregion
 
+//region color distribution
+const mk_color_dist = () => {
+    const for_year = (subset, year, cards) => {
+        const counts = { colorless: 0, green: 0, red: 0, black: 0, blue: 0, white: 0, mixed: 0 };
+
+        const card_col = [];
+        let cards_set = 0;
+        subset.forEach(set => {
+            const cards_ = cards[set.code].flat()
+                .filter(card => card.colors != null)
+                .map(card => card.colors);
+            const faces = cards[set.code].flat()
+                .filter(card => card.colors == null)
+                .map(card => card.card_faces);
+
+            faces.forEach(f => {
+               const f_col = f.map(face => face.colors).flat();
+               cards_.push(f_col.filter((v, i, a) => a.indexOf(v) === i));
+            });
+
+            cards_set += cards_per_set(cards_);
+
+            cards_.forEach(col => {
+               if(col.length === 0) counts.colorless++;
+                else if(col.length === 1) counts[get_color_by_code(col[0])]++;
+                else counts.mixed++;
+            });
+        });
+
+        Object.keys(counts).forEach(k => {
+            card_col.push({
+                year: year, color: k, color_count: counts[k] / cards_set
+            });
+        });
+        return card_col;
+    };
+
+    const result = [];
+    for(let i = sets_filtered[0].release.getFullYear(); i <= sets_filtered.at(-1).release.getFullYear(); i++) {
+        const subset = sets_filtered.filter(set => set.release.getFullYear() === i);
+        result.push(...for_year(subset, i, cards));
+    }
+
+    return result;
+};
+
+const color_dist = mk_color_dist();
+//endregion
+
+//region output
 process.stdout.write(JSON.stringify({
     sets: {
         raw: sets_raw,
@@ -119,5 +178,9 @@ process.stdout.write(JSON.stringify({
     complexity: {
         raw: complexity_raw,
         by_kind: complexity_by_kind
+    },
+    evolution: {
+        color_dist: color_dist
     }
 }));
+//endregion
