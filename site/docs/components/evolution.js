@@ -758,7 +758,7 @@ export const reprints = (sets, cards, plot_type='bar', normalized=false, {from, 
             time: true,
             x: false,
             y: false,
-            fill: false,
+            fill: false
             }
         }
     }
@@ -821,8 +821,7 @@ export const set_type = (sets, plot_type='bar', normalized=false, {from, to} = {
         y: "count",
         fill: "type", 
         tip: true,
-        order: 'sum',
-        reverse: true
+        order: ['arsenal', 'box', 'commander', 'core', 'draft innovation', 'expansion', 'masters', 'planechase', 'starter'],
     }
 
     if (normalized) {
@@ -841,7 +840,7 @@ export const set_type = (sets, plot_type='bar', normalized=false, {from, to} = {
         height: 500,
         x: {tickFormat: "", interval: 1, label: "Time [year]", dx: 1},
         y: {label: "Number of sets", grid: true, percent: true},
-        color: {legend: true},
+        color: {legend: true, scheme: 'spectral', label: 'Set Type'},
         marks: [
           plt
         ]
@@ -855,7 +854,7 @@ export const set_type_dist = (sets, {from, to} = {from:1990, to:2030}) => {
         y: {label: 'Number of sets'},
         width: 700,
         marginBottom: 50,
-        color: {legend: true},
+        color: {legend: true, scheme: 'Spectral'},
         marks: [
           Plot.barY(data, {
             x: "type", 

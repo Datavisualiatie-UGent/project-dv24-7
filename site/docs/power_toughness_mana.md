@@ -54,14 +54,3 @@ selected_color_3.forEach(color => {
 });
 display(html`<div style="display: grid; grid-template-columns: 1fr 1fr; column-gap: 20px; row-gap: 20px;">${plots_power}</div>`)
 ```
-
-# Box and whisker plot 
-```js
-const selected_color_6 = view(Inputs.select(color_list, {label: "Color", value: "Red",}));
-const selected_set_name_6 = view(Inputs.select(selector, {value: "All", label: "Sets"}));
-```
-
-```js
-import {rarity_morley} from './components/power_toughness_mana.js';
-display(rarity_morley(set_selector_filter(sets, selected_set_name_6), selected_color_6, cards_by_sets))
-```
