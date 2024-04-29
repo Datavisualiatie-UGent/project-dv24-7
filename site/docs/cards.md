@@ -12,18 +12,17 @@ import {set_selector_filter} from './components/utils.js';
 import {cards_color_type} from './components/card_info.js';
 const selector = ['All'];
 selector.push(...sets.map(set => set.name).sort())
-const selected_set_name = view(Inputs.select(selector, {value: "All", label: "Sets"}));
+const selected_set_name_1 = view(Inputs.select(selector, {value: "All", label: "Sets"}));
 ```
 
 ```js
-display(cards_color_type(set_selector_filter(sets, selected_set_name), cards_by_sets));
+display(cards_color_type(set_selector_filter(sets, selected_set_name_1), cards_by_sets));
 ```
 
 ## Card prices
 ```js
 import {card_prices} from './components/card_info.js';
-const selected_set_name_5 = view(Inputs.select(selector, {value: "All", label: "Sets"}));
-const prices_order = view(Inputs.select(['Ascending', 'Descending'], {value: "Descending", label: "Order"}));
+const selected_set_name_2 = view(Inputs.select(selector, {value: "All", label: "Sets"}));
 const number_prices = view(
   Inputs.range(
     [1, 100],
@@ -33,5 +32,23 @@ const number_prices = view(
 ```
 
 ```js
-display(card_prices(set_selector_filter(sets, selected_set_name_5), cards_by_sets, parseInt(number_prices), prices_order));
+display(card_prices(set_selector_filter(sets, selected_set_name_2), cards_by_sets, parseInt(number_prices)));
+```
+
+## Most noteable artists
+Bar graph showing the number of unique arts (i.e. reprints not counted) that the top artists made
+```js
+import {artists, artists_reprints} from './components/card_info.js';
+const selected_set_name_3 = view(Inputs.select(selector, {value: "All", label: "Sets"}));
+const number_artists = view(
+  Inputs.range(
+    [1, 100],
+    {step: 1, value: 25, label: 'Number of cards'}
+  )
+);
+```
+
+```js
+display(artists(set_selector_filter(sets, selected_set_name_3), cards_by_sets, parseInt(number_artists)));
+display(artists_reprints(set_selector_filter(sets, selected_set_name_3), cards_by_sets, parseInt(number_artists)));
 ```

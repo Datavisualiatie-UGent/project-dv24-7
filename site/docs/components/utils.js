@@ -30,7 +30,7 @@ export const get_color_by_code = (code) => {
 
 export const color_scheme_map = (color_name) => {
     const map = {
-        colorless: 'Viridis',
+        colorless: 'PuRd',
         green: 'Greens',
         red: 'Reds',
         black: 'Greys',

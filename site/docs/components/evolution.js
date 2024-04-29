@@ -693,7 +693,7 @@ export const cards_per_set_per_year = (sets, cards, {from, to} = {from:1990, to:
             Plot.gridY({stroke: "white", strokeOpacity: 1}),
             Plot.gridX({stroke: "white", strokeOpacity: 1}),
             Plot.ruleY([0]),
-            Plot.line(actual, {x: "release", y: "n", tip: true})
+            Plot.line(actual, {x: "release", y: "n", tip: true, stroke: '#4e79a7'})
         ]
       })
 }

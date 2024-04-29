@@ -13,7 +13,7 @@ selector.push(...sets.map(set => set.name).sort())
 
 ## Power vs Toughness per color per mana cost
 ```js
-import {cards_color_power_mana, cards_color_power} from './components/power_toughness.js';
+import {cards_color_power_mana, cards_color_power} from './components/power_toughness_mana.js';
 const color_list = ['Red', 'Blue', 'Green', 'White', 'Black', 'Mixed', 'Colorless', 'All'];
 const selected_color_2 = view(Inputs.checkbox(color_list, {label: "Color", value: ["Red"],}));
 const selected_set_name_2 = view(Inputs.select(selector, {value: "All", label: "Sets"}));
@@ -38,7 +38,7 @@ display(html`<div style="display: grid; grid-template-columns: 1fr 1fr; column-g
 
 ## Power vs rarity per color
 ```js
-import {cards_rarity_power} from './components/power_toughness.js';
+import {rarity_vs_property} from './components/power_toughness_mana.js';
 const selected_color_3 = view(Inputs.checkbox(color_list, {label: "Color", value: ["Red"],}));
 const selected_set_name_3 = view(Inputs.select(selector, {value: "All", label: "Sets"}));
 ```
@@ -46,14 +46,13 @@ const selected_set_name_3 = view(Inputs.select(selector, {value: "All", label: "
 ```js
 const plots_power = []
 selected_color_3.forEach(color => {
-    plots_power.push(cards_rarity_power(set_selector_filter(sets, selected_set_name_3), color, cards_by_sets));
+    plots_power.push(rarity_vs_property(set_selector_filter(sets, selected_set_name_3), color, cards_by_sets, 'power'));
 });
 display(html`<div style="display: grid; grid-template-columns: 1fr 1fr; column-gap: 20px; row-gap: 20px;">${plots_power}</div>`)
 ```
 
 ## Toughness vs rarity per color
 ```js
-import {cards_rarity_toughness} from './components/power_toughness.js';
 const selected_color_4 = view(Inputs.checkbox(color_list, {label: "Color", value: ["Red"],}));
 const selected_set_name_4 = view(Inputs.select(selector, {value: "All", label: "Sets"}));
 ```
@@ -61,7 +60,32 @@ const selected_set_name_4 = view(Inputs.select(selector, {value: "All", label: "
 ```js
 const plots_toughness = []
 selected_color_4.forEach(color => {
-    plots_toughness.push(cards_rarity_toughness(set_selector_filter(sets, selected_set_name_4), color, cards_by_sets));
+    plots_toughness.push(rarity_vs_property(set_selector_filter(sets, selected_set_name_4), color, cards_by_sets, 'power'));
 });
 display(html`<div style="display: grid; grid-template-columns: 1fr 1fr; column-gap: 20px; row-gap: 20px;">${plots_toughness}</div>`)
+```
+
+## Toughness vs mana cost per color
+```js
+const selected_color_5 = view(Inputs.checkbox(color_list, {label: "Color", value: ["Red"],}));
+const selected_set_name_5 = view(Inputs.select(selector, {value: "All", label: "Sets"}));
+```
+
+```js
+const plots_toughness = []
+selected_color_5.forEach(color => {
+    plots_toughness.push(rarity_vs_property(set_selector_filter(sets, selected_set_name_5), color, cards_by_sets, 'mana_cost'));
+});
+display(html`<div style="display: grid; grid-template-columns: 1fr 1fr; column-gap: 20px; row-gap: 20px;">${plots_toughness}</div>`)
+```
+
+# Box and whisker plot 
+```js
+const selected_color_6 = view(Inputs.select(color_list, {label: "Color", value: "Red",}));
+const selected_set_name_6 = view(Inputs.select(selector, {value: "All", label: "Sets"}));
+```
+
+```js
+import {rarity_morley} from './components/power_toughness_mana.js';
+display(rarity_morley(set_selector_filter(sets, selected_set_name_6), selected_color_6, cards_by_sets))
 ```
