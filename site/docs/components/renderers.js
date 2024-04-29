@@ -302,7 +302,7 @@ export const complexity_by_kind = (kinds, unfiltered_sets, cards, {w, h} = {w:12
     }
 
     const mouse_move = (event, d) => {
-        tooltip.html(`Set ${d.name} (Code ${d.set})<br>Average ${d.avg.toFixed(2)} words/card.<br>Set type: ${d.type}`)
+        tooltip.html(`Set ${d.name} (Code ${d.code})<br>Average ${d.avg.toFixed(2)} words/card.<br>Set type: ${d.type}`)
             .style("left", (event.pageX) + "px")
             .style("top", (event.pageY) + "px");
         d3.select(`#reg-line-${d.type}`).transition().style('visibility', 'visible').style('stroke', color_for(d.type));
