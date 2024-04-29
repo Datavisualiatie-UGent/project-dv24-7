@@ -743,7 +743,8 @@ export const reprints = (sets, cards, plot_type='bar', normalized=false, {from, 
     const config = {
         x: "year", 
         y: "count", 
-        fill:'type', 
+        fill:'type',
+        marginLeft: normalized ? 10 : 50,
         width:10, 
         channels: {
             count_total: {value: "total", label: "Total number of Cards"},
@@ -836,8 +837,6 @@ export const set_type = (sets, plot_type='bar', normalized=false, {from, to} = {
     }
 
     return Plot.plot({
-        width: 928,
-        height: 500,
         x: {tickFormat: "", interval: 1, label: "Time [year]", dx: 1},
         y: {label: "Number of sets", grid: true, percent: true},
         color: {legend: true, scheme: 'spectral', label: 'Set Type'},
