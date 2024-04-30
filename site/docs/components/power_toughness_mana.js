@@ -1,5 +1,5 @@
 import * as Plot from "npm:@observablehq/plot";
-import {color_scheme_map} from './utils.js';
+import {color_scheme_map, get_card_color, get_card_type} from './utils.js';
 
 const calculate_mana = (mana_cost) => {
     const mana_vals  = mana_cost.split('}').map(val => val.replace('{', ''))
@@ -63,8 +63,8 @@ export const cards_color_power = (all_sets, color_name, cards) => {
         marginRight: 150,
          width: 800,
         height: 500,
-        x: {label: "Power", type: 'linear', domain: Array.from({length: 20}, (_, i) => i-1)},
-        y: {label: "Toughness", type: 'linear', domain: Array.from({length: 20}, (_, i) => i-1)},
+        x: {label: "Toughness", type: 'linear', domain: Array.from({length: 20}, (_, i) => i-1)},
+        y: {label: "Power", type: 'linear', domain: Array.from({length: 20}, (_, i) => i-1)},
         r: {range: [2, 10]},
         marks: [
             Plot.link(
@@ -80,8 +80,8 @@ export const cards_color_power = (all_sets, color_name, cards) => {
             Plot.text(
                 [{power: 18.5, toughness: 18.5, text: 'Perfect ratio'}], 
                 {
-                x: 'power',
-                y: 'toughness',
+                x: 'toughness',
+                y: 'power',
                 text: 'text',
                 textAnchor: "start",
                 dx: 10
@@ -92,7 +92,7 @@ export const cards_color_power = (all_sets, color_name, cards) => {
                 {
                 ...Plot.bin(
                     {r: 'count', fill: 'count', x: 'min', y: 'min'}, 
-                    {x: "power", y: "toughness", stroke: 'black', tip: true, interval: 1, inset: 0.5},
+                    {x: "toughness", y: "power", stroke: 'black', tip: true, interval: 1, inset: 0.5},
                 ),
                 }
             )
@@ -175,8 +175,10 @@ const rarity_domain = (dataset) => {
     return used_rarities;
 }
 
-export const cards_rarity_power = (all_sets, color_name, cards) => {
+export const rarity_vs_property = (all_sets, color_name, cards, data_type) => {
     const dataset = get_color_dataset(all_sets, color_name, cards);
+    const config = {x:data_type, fy: "rarity", inset: 0.1, interval: 1, tip: true}
+
     return Plot.plot({
         marginLeft: 100,
         padding: 0,
@@ -188,27 +190,20 @@ export const cards_rarity_power = (all_sets, color_name, cards) => {
                 dataset, 
                 Plot.binX(
                     {fill: "count", x: 'min'}, 
-                    {x: "power", fy: "rarity", inset: 0.1, interval: 1, tip: true}
+                    config
                 ))
         ]
       })
 }
 
-export const cards_rarity_toughness = (all_sets, color_name, cards) => {
+export const rarity_morley = (all_sets, color_name, cards) => {
     const dataset = get_color_dataset(all_sets, color_name, cards);
+    // const config = {x: data_type, fy: "rarity", inset: 0.1, interval: 1, tip: true}
+
     return Plot.plot({
-        marginLeft: 100,
-        padding: 0,
-        x: {grid: true, domain: Array.from({length: 18}, (_, i) => i)},
-        fy: {domain: rarity_domain(dataset)},
-        color: {legend: true, scheme: color_scheme_map(color_name)},
+        x: {grid: true,  domain: Array.from({length: 20}, (_, i) => i-1)},
         marks: [
-            Plot.rect(
-                dataset, 
-                Plot.binX(
-                    {fill: "count", x: 'min'}, 
-                    {x: "toughness", fy: "rarity", inset: 0.1, interval: 1, tip: true}
-                ))
+          Plot.boxY(dataset, {x: "toughness", y: "mana_cost"})
         ]
       })
 }
