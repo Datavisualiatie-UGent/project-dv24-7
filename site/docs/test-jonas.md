@@ -1,5 +1,5 @@
 ---
-title: Small Test Jonas (with dataloaders)
+title: Small Test Jonas
 ---
 
 ```js
