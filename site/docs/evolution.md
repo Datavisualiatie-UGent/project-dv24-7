@@ -8,9 +8,15 @@ import {set_selector_filter} from './components/utils.js';
 ```
 
 ## Evolution of color distribution
-```js
+Graph showing how the distribution of colors changed over the years
+<!-- ```js
 import {color_per_year_bar} from './components/evolution.js';
 display(color_per_year_bar(sets, cards_by_sets));
+```
+
+```js
+// import {color_per_year_bar_plot} from './components/evolution.js';
+// display(color_per_year_bar_plot(sets, cards_by_sets));
 ```
 
 ```js
@@ -18,41 +24,43 @@ import {color_per_year_area} from './components/evolution.js';
 display(color_per_year_area(sets, cards_by_sets));
 ```
 
-<br>
+<br> -->
 
 ```js
 import {color_per_year_area_plot} from './components/evolution.js';
 display(color_per_year_area_plot(sets, cards_by_sets));
 ```
 
-```js
+## Evolution fo rarity distribution
+Graph showing how the distribution of colors changed over the years
+<!-- ```js
 import {rarity_per_year_area} from './components/evolution.js';
 display(rarity_per_year_area(sets, cards_by_sets));
-```
+``` -->
+
 <br>
 
-## Reprints vs New Cards
 ```js
-import {reprints_bar, reprints_bar_normal} from './components/evolution.js';
-display(html`<div style="display: grid; grid-template-columns: 1fr 1fr; column-gap: 20px; row-gap: 20px;">${reprints_bar(sets, cards_by_sets)}${reprints_bar_normal(sets, cards_by_sets)}</div>`)
+import {rarity_per_year_area_plot} from './components/evolution.js';
+display(rarity_per_year_area_plot(sets, cards_by_sets));
 ```
 
-## Evolution of set size
+## Reprints vs New Cards
+Graph showing how many cards were released each year and how many of those are new cards or reprints.
 ```js
-import {cards_per_set_per_year} from './components/evolution.js';
-display(cards_per_set_per_year(sets, cards_by_sets));
+import {reprints} from './components/evolution.js';
+display(html`<div style="display: grid; grid-template-columns: 1fr 1fr; column-gap: 20px; row-gap: 20px;">${reprints(sets, cards_by_sets, 'bar')}${reprints(sets, cards_by_sets, 'bar', true)}</div>`)
 ```
 
 ## Evolution of set type
+Graph showing how many of each set type were released each year
 ```js
-
-import {set_type, set_type_normal, set_type_bar} from './components/evolution.js';
-display(html`<div style="display: grid; grid-template-columns: 1fr 1fr; column-gap: 20px; row-gap: 20px;">${set_type(sets)}${set_type_normal(sets)}</div>`)
-display(set_type_bar(sets))
+import {set_type, set_type_dist} from './components/evolution.js';
+display(html`<div style="display: grid; grid-template-columns: 1fr 1fr; column-gap: 20px; row-gap: 20px;">${set_type(sets, 'bar')}${set_type(sets, 'bar', true)}</div>`)
 ```
 
-## Number of cards released per year
+## Set type distribution
+Graph showing how many sets of each set type there are
 ```js
-import {cards_per_year} from './components/evolution.js';
-display(cards_per_year(sets, cards_by_sets));
+display(set_type_dist(sets))
 ```

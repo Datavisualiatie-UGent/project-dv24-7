@@ -1,23 +1,5 @@
 import * as Plot from "npm:@observablehq/plot";
-import {get_color_by_code, color_scheme_map} from './utils.js';
-
-
-const get_card_color = (card) => {
-    if (card.colors.length > 1) {
-        return 'mixed';
-    } else {
-        return  get_color_by_code(card.colors[0]);
-    }
-}
-
-const get_card_type = (card) => {
-    const card_type_str = (new String(card.type_line)).split(' — ')[0].split(' ')
-    if (card_type_str.length > 1) {
-        return 'Multi';
-    } else {
-        return card_type_str[0]
-    }
-}
+import {get_card_color, get_card_type} from './utils.js';
 
 
 export const cards_color_type = (sets, cards) => {
@@ -55,9 +37,7 @@ export const cards_color_type = (sets, cards) => {
       })
 }
 
-export const card_prices = (all_sets, cards, n, order) => {
-    const test = []
-
+export const card_prices = (all_sets, cards, n, order='Descending') => {
     const dataset = [];
     all_sets.forEach(set => {
         const cards_list = cards[set.code].flat().filter(card => card.prices != null).filter(card => card.prices.eur != null).map(card => {
@@ -119,6 +99,100 @@ export const card_prices = (all_sets, cards, n, order) => {
                 dx: 3,
                 fill: "black"
             })
+        ]
+      })
+}
+
+export const artists = (all_sets, cards, n) => {
+    const dataset = [];
+    all_sets.forEach(set => {
+        const cards_list = cards[set.code].flat().filter(card => !card.reprint).map(card => {
+            return {
+                artist: card.artist
+            }
+        });
+        dataset.push(...cards_list);
+    })
+
+    return Plot.plot({
+        marginLeft: 150,
+        marginRight: 50,
+        width: 900,
+        x: {
+            axis: "top",
+            grid: true,
+            label: 'Number of unique arts made',
+            type: 'linear',
+          },
+          y: {
+              label: 'Artist Name'
+          },
+        marks: [
+          Plot.barX(dataset, Plot.groupY(
+            {x: "count"},  {
+                y: "artist", 
+                reduce: 'min', 
+                tip: true,
+                sort: {y: "-x", limit: n}
+            })),
+          Plot.ruleY([0]),
+          Plot.text(dataset, Plot.groupY(
+            {x: "count", text: "count"},  {
+                y: "artist", 
+                reduce: 'min', 
+                sort: {y: "-x", limit: n}, 
+                dx: 12
+            })
+          )
+        ]
+      })
+}
+
+export const artists_reprints = (all_sets, cards, n) => {
+    const dataset = [];
+    all_sets.forEach(set => {
+        const cards_list = cards[set.code].flat().map(card => {
+            return {
+                artist: card.artist,
+                reprint: card.reprint
+            }
+        });
+        dataset.push(...cards_list);
+    })
+
+    return Plot.plot({
+        marginLeft: 150,
+        marginRight: 50,
+        width: 900,
+        color: {legend: true, scheme: "Tableau10", tickFormat: d => d ? 'Reprint': 'New Card'},
+        x: {
+            axis: "top",
+            grid: true,
+            label: 'Number cards with art',
+            type: 'linear',
+
+          },
+          y: {
+              label: 'Artist Name'
+          },
+        marks: [
+          Plot.barX(dataset, Plot.groupY(
+            {x: "count"},  {
+                y: "artist",
+                fill: "reprint", 
+                reduce: 'min', 
+                tip: true,
+                sort: {y: "-x", limit: n}
+            })),
+          Plot.ruleY([0]),
+          Plot.text(dataset, Plot.groupY(
+            {x: "count", text: "count"},  {
+                y: "artist",
+                reduce: 'min', 
+                sort: {y: "-x", limit: n}, 
+                dx: 12
+            })
+          )
         ]
       })
 }
