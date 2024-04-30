@@ -71,3 +71,7 @@ export const get_card_type = (card) => {
         return card_type_str[0]
     }
 }
+
+export const capitalizeFirstLetter = (string) => {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+}

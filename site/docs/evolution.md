@@ -33,11 +33,17 @@ display(color_per_year_area_plot(sets, cards_by_sets));
 
 ## Evolution fo rarity distribution
 Graph showing how the distribution of colors changed over the years
-```js
+<!-- ```js
 import {rarity_per_year_area} from './components/evolution.js';
 display(rarity_per_year_area(sets, cards_by_sets));
-```
+``` -->
+
 <br>
+
+```js
+import {rarity_per_year_area_plot} from './components/evolution.js';
+display(rarity_per_year_area_plot(sets, cards_by_sets));
+```
 
 ## Reprints vs New Cards
 Graph showing how many cards were released each year and how many of those are new cards or reprints.
