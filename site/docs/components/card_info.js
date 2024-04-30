@@ -20,6 +20,8 @@ export const cards_color_type = (sets, cards) => {
         }));
     })
 
+    console.log(aggregate);
+
     return Plot.plot({
         marginLeft: 80,
         padding: 0.05,

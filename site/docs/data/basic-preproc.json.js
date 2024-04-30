@@ -1,6 +1,6 @@
 import {readFile} from 'node:fs/promises';
 import {fileURLToPath} from 'node:url';
-import {filter_years, cards_per_set, get_color_by_code} from "../components/utils.js";
+import {filter_years, cards_per_set, get_color_by_code, get_card_color, get_card_type} from "../components/utils.js";
 
 //region constants/utility
 const url_pre = '../../scraper/out/';
@@ -113,7 +113,7 @@ const complexity_raw = sets_filtered.map(set => {
 });
 //endregion
 
-//region color distribution
+//region distribution
 const color_fn = (subset, year, cards) => {
     const counts = { colorless: 0, green: 0, red: 0, black: 0, blue: 0, white: 0, mixed: 0 };
 
@@ -218,6 +218,41 @@ const reprint_dist = mk_year_dist(reprint_new_fn);
 const set_type_dist = mk_year_dist(set_type_fn);
 //endregion
 
+//region card data
+const card_tc_filter = (card) => card.colors != null && card.type_line != null && !card.type_line.includes('Token');
+const cards_color_type = sets_filtered.map(set => {
+   return [...cards[set.code].flat()]
+       .filter(card_tc_filter)
+       .map(card => ({
+           card: card,
+           color: card.colors.length !== 0 ? get_card_color(card) : 'colorless',
+           type: get_card_type(card),
+           set: set.name
+       }));
+}).flat();
+
+const card_p_filter = (card) => card.prices != null && card.prices.eur != null;
+const cards_prices = sets_filtered.map(set => {
+    return [...cards[set.code].flat()]
+        .filter(card_p_filter)
+        .map(card => ({
+            card_name: card.name,
+            name: `${card.name} (${card.set_name})`,
+            price: parseFloat(card.prices.eur),
+            set: set.name
+        }));
+}).flat().sort((a, b) => b.price - a.price);
+
+const cards_artist = sets_filtered.map(set => {
+   return [...cards[set.code].flat()]
+       .map(card => ({
+           artist: card.artist,
+           reprint: card.reprint,
+           set: set.name
+       }))
+}).flat();
+//endregion
+
 //region output
 process.stdout.write(JSON.stringify({
     sets: {
@@ -240,6 +275,11 @@ process.stdout.write(JSON.stringify({
         rarity_dist: rarity_dist,
         reprint_dist: reprint_dist,
         set_type_dist: set_type_dist
+    },
+    card_info: {
+        color_type: cards_color_type,
+        prices: cards_prices,
+        artist: cards_artist
     }
 }));
 //endregion
