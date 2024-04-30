@@ -164,12 +164,13 @@ export const artists_reprints = (all_sets, cards, n) => {
         marginLeft: 150,
         marginRight: 50,
         width: 900,
-        color: {legend: true, scheme: "Tableau10", tickFormat: d => d ? 'Reprint': 'New Card'},
+        color: {legend: true, scheme: "Spectral", tickFormat: d => d ? 'Reprint': 'New Card'},
         x: {
             axis: "top",
             grid: true,
-            label: 'Number cards with art',
+            label: 'Number of cards',
             type: 'linear',
+            tickFormat: d => d < 0 ? -d : d
 
           },
           y: {
@@ -177,7 +178,7 @@ export const artists_reprints = (all_sets, cards, n) => {
           },
         marks: [
           Plot.barX(dataset, Plot.groupY(
-            {x: "count"},  {
+            {x: d => d[0].reprint ? -d.length: d.length},  {
                 y: "artist",
                 fill: "reprint", 
                 reduce: 'min', 
@@ -186,11 +187,12 @@ export const artists_reprints = (all_sets, cards, n) => {
             })),
           Plot.ruleY([0]),
           Plot.text(dataset, Plot.groupY(
-            {x: "count", text: "count"},  {
+            {x: d => d[0].reprint ? -d.length + 15: d.length - 15, text: "count"},  {
                 y: "artist",
-                reduce: 'min', 
+                z: 'reprint',
+                fill: 'white',
+                reduce: 'min',
                 sort: {y: "-x", limit: n}, 
-                dx: 12
             })
           )
         ]
