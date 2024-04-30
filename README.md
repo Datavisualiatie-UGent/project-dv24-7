@@ -1,4 +1,5 @@
 # Datavisualisatie
+Data analysis and visualisation of Magic: The Gathering using the [Scryfall](https://scryfall.com/docs/api) dataset
 
 This is an [Observable Framework](https://observablehq.com/framework) project. To start the local preview server, run:
 
