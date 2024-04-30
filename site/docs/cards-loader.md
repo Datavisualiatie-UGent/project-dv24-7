@@ -3,7 +3,7 @@ title: Card info (dataloader)
 ---
 
 ```js
-const data = await FileAttachment('./data/basic-preproc.json').json();
+const data = await FileAttachment('./data/cards_color_pricing_artists.json').json();
 
 const data_filtered = (source, filter) => {
     return filter === 'All' ? source : source.filter(d => d.set === filter);
