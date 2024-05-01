@@ -33,5 +33,5 @@ const load_cards = async () => {
 };
 
 export const sets = remove_excluded_sets(sets_raw);
-export const set_kinds = [...new Set(sets_raw.map(set => set.set_type))]; 
+export const set_kinds = [...new Set(sets_raw.map(set => set.set_type))];
 export const cards_by_sets = await load_cards();
