@@ -46,3 +46,27 @@ export const cards_color_power = (color, data) => {
         ]
     });
 }
+
+export const cards_color_rarity = (color, data, property) => {
+    const rarities = ['common', 'uncommon', 'rare', 'mythic', 'special']
+        .filter(r => data.some(d => d.rarity === r));
+    const config = {x:property, fy: "rarity", inset: 0.1, interval: 1, tip: true}
+
+    console.log(data);
+
+    return Plot.plot({
+        marginLeft: 100,
+        padding: 0,
+        x: {grid: true,  domain: Array.from({length: 20}, (_, i) => i-1)},
+        fy: {domain: rarities},
+        color: {legend: true, scheme: color_scheme_map(color)},
+        marks: [
+            Plot.rect(
+                data,
+                Plot.binX(
+                    {fill: "count", x: 'min'},
+                    config
+                ))
+        ]
+    })
+}
