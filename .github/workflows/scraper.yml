@@ -15,4 +15,4 @@ jobs:
         uses: actions/cache/save@v4
         with:
           path: ./scraper/out
-        key: this_is_a_cool_key
+          key: this_is_a_cool_key
