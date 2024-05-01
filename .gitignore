@@ -1,2 +1,7 @@
-scryfal*.json
+.DS_Store
+dist/
+docs/.observablehq/cache/
 node_modules/
+yarn-error.log
+!docs/data/events.json
+.idea/
