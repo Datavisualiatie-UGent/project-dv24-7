@@ -10,8 +10,7 @@ jobs:
     steps:
       - name: Scrape
         run: ./scraper.sh
-        with:
-          path: ./scraper
+        working-directory: ./scraper
 
       - name: Save
         uses: actions/cache/save@v4
