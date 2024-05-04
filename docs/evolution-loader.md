@@ -35,3 +35,7 @@ display(html`<div style="display: grid; grid-template-columns: 1fr 1fr; column-g
 import {set_type_dist} from './components/evolution-loader.js';
 display(set_type_dist(data.set_type_dist));
 ```
+```js
+import {pie_chart_set_type_distribution} from "./data/mtg-graphs.js";
+display(pie_chart_set_type_distribution(data.set_type_dist_pie));
+```

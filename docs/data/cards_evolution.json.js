@@ -1,5 +1,6 @@
 import {load_base_data} from "./base-loader.js";
 import {cards_per_set, get_color_by_code} from "../components/utils.js";
+import * as d3 from "d3";
 
 const {cards,filtered} = await load_base_data();
 
@@ -105,10 +106,30 @@ const color_dist = mk_year_dist(color_fn);
 const rarity_dist = mk_year_dist(rarity_fn);
 const reprint_dist = mk_year_dist(reprint_new_fn);
 const set_type_dist = mk_year_dist(set_type_fn);
+// const set_type_dist_pie = d3.nest().key(d => d.year).key(d => d.type).rollup(d => d3.sum(d, d => d.count))
+const type_counts = d3.rollup(set_type_dist, v => d3.sum(v, d => d.count), d => d.type);
+const type_count_objs = valid_types.reduce((acc, t) => {
+    const obj = {};
+    if (t === 'arsenal' || t === 'planechase') {
+        if ('other' in acc) {
+            acc['other']['count'] += type_counts.get(t);
+            return acc;
+        }
+        acc['other'] = {type: 'other', count: type_counts.get(t), description: 'arsenal & planechase'}
+        return acc;
+    }
+    acc[t] = {type: t, count: type_counts.get(t)}
+    return acc;
+}, {});
+const set_type_dist_pie = {};
+set_type_dist_pie['distribution'] = Object.values(type_count_objs);
+set_type_dist_pie['total'] = d3.sum(Object.values(type_count_objs), d => d.count);
 
 process.stdout.write(JSON.stringify({
     color_dist: color_dist,
     rarity_dist: rarity_dist,
     reprint_dist: reprint_dist,
-    set_type_dist: set_type_dist
+    set_type_dist: set_type_dist,
+    set_type_dist_pie: set_type_dist_pie,
+    cards: cards
 }));
