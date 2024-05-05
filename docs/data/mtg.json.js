@@ -1,24 +1,40 @@
-import {readFile} from "node:fs/promises";
-import {fileURLToPath} from "node:url";
+import {load_base_data} from "./base-loader.js";
+import {get_card_color, get_color_by_code} from "../components/utils.js";
 
-const cards_data = await readFile(fileURLToPath(import.meta.resolve("./cards.json")), "utf-8");
-const cards_with_duplicates = JSON.parse(cards_data);
+var {raw,cards,filtered,kinds} = await load_base_data();
 
-function deduplicate_cards(cards) {
-    const deduplicated_cards = {};
-    for (var i = 0; i < cards.length; i++) {
-        const card = cards[i];
-        const name = `[${card['set_id']}] ${card['name']}`;
-        // const name = card['name'];
-        if (!deduplicated_cards[name]) {
-            deduplicated_cards[name] = card;
-        }
-        // deduplicated_cards[name] = card;
+// const cards_data = await readFile(fileURLToPath(import.meta.resolve("./cards.json")), "utf-8");
+// const cards_with_duplicates = JSON.parse(cards_data);
+
+// function deduplicate_cards(cards) {
+//     const deduplicated_cards = {};
+//     for (var i = 0; i < cards.length; i++) {
+//         const card = cards[i];
+//         const name = `[${card['set_id']}] ${card['name']}`;
+//         // const name = card['name'];
+//         if (!deduplicated_cards[name]) {
+//             deduplicated_cards[name] = card;
+//         }
+//         // deduplicated_cards[name] = card;
+//     }
+//     return deduplicated_cards;
+// }
+
+// const cards = deduplicate_cards(cards_with_duplicates);
+const cards_old = cards
+const cards_new = {};
+for (const set of filtered) {
+    let set_cards = cards[set.code].flat();
+    for (const card of set_cards) {
+        cards_new[card["id"]] = card;
     }
-    return deduplicated_cards;
 }
+// for (const set in cards) {
+// } 
 
-const cards = deduplicate_cards(cards_with_duplicates);
+cards = cards_new
+
+
 
 const layout_count = Object.keys(cards).reduce((acc, curr) => {
     const cur = cards[curr];
@@ -36,34 +52,38 @@ const cmc_count = Object.keys(cards).reduce((acc, curr) => {
 
 const cmc_count_by_color = Object.keys(cards).reduce((acc, curr) => {
     const cur = cards[curr];
-    switch (cur.colors) {
-        case 0:
-            acc['colorless'][cur.cmc] ? acc['colorless'][cur.cmc]++ : acc['colorless'][cur.cmc] = 1;
-            acc['colorless']['total']++;
-            break;
-        case 1:
-            acc['green'][cur.cmc] ? acc['green'][cur.cmc]++ : acc['green'][cur.cmc] = 1;
-            acc['green']['total']++;
-            break;
-        case 2:
-            acc['red'][cur.cmc] ? acc['red'][cur.cmc]++ : acc['red'][cur.cmc] = 1;
-            acc['red']['total']++;
-            break;
-        case 4:
-            acc['black'][cur.cmc] ? acc['black'][cur.cmc]++ : acc['black'][cur.cmc] = 1;
-            acc['black']['total']++;
-            break;
-        case 8:
-            acc['blue'][cur.cmc] ? acc['blue'][cur.cmc]++ : acc['blue'][cur.cmc] = 1;
-            acc['blue']['total']++;
-            break;
-        case 16:
-            acc['white'][cur.cmc] ? acc['white'][cur.cmc]++ : acc['white'][cur.cmc] = 1;
-            acc['white']['total']++;
-            break;
-        default:
-            acc['mixed'][cur.cmc] ? acc['mixed'][cur.cmc]++ : acc['mixed'][cur.cmc] = 1;
-            acc['mixed']['total']++;
+    if (! ("cmc" in cur)) {
+        acc['skipped_cmc'].push(cur);
+        return acc;
+    }
+    if (! ("colors" in cur)) {
+        if (cur.layout === 'transform') {
+            acc['skipped_transform'].push(cur);
+            return acc;
+        }
+        if (cur.layout === 'double_faced_token') {
+            acc['skipped_double_faced_token'].push(cur);
+            return acc;
+        }
+        if (cur.layout === 'modal_dfc') {
+            acc['skipped_modal_dfc'].push(cur);
+            return acc;
+        }
+        if (cur.layout === 'reversible_card') {
+            acc['skipped_reversible_card'].push(cur);
+            return acc;
+        }
+        acc['skipped_other'].push(cur);
+        return acc;
+    }
+    let cmc = cur.cmc.toString();
+    if (cur.colors.length === 0) {
+        acc['colorless'][cmc] ? acc['colorless'][cmc]++ : acc['colorless'][cmc] = 1;
+        acc['colorless']['total']++;
+    } else {
+        let color = get_card_color(cur)
+        acc[color][cmc] ? acc[color][cmc]++ : acc[color][cmc] = 1;
+        acc[color]['total']++;
     }
     acc['total']++;
     return acc;
@@ -74,7 +94,13 @@ const cmc_count_by_color = Object.keys(cards).reduce((acc, curr) => {
     blue: {total: 0},      // color code: 8
     white: {total: 0},     // color code: 16
     mixed: {total: 0},
-    total: 0});
+    total: 0,
+    skipped_transform: [],
+    skipped_double_faced_token: [],
+    skipped_modal_dfc: [],
+    skipped_reversible_card: [],
+    skipped_other: [],
+    skipped_cmc: []});
 
 const power_count = Object.keys(cards).reduce((acc, curr) => {
     const cur = cards[curr];
@@ -85,34 +111,38 @@ const power_count = Object.keys(cards).reduce((acc, curr) => {
 
 const power_count_by_color = Object.keys(cards).reduce((acc, curr) => {
     const cur = cards[curr];
-    switch (cur.colors) {
-        case 0:
-            acc['colorless'][cur.power] ? acc['colorless'][cur.power]++ : acc['colorless'][cur.power] = 1;
-            acc['colorless']['total']++;
-            break;
-        case 1:
-            acc['green'][cur.power] ? acc['green'][cur.power]++ : acc['green'][cur.power] = 1;
-            acc['green']['total']++;
-            break;
-        case 2:
-            acc['red'][cur.power] ? acc['red'][cur.power]++ : acc['red'][cur.power] = 1;
-            acc['red']['total']++;
-            break;
-        case 4:
-            acc['black'][cur.power] ? acc['black'][cur.power]++ : acc['black'][cur.power] = 1;
-            acc['black']['total']++;
-            break;
-        case 8:
-            acc['blue'][cur.power] ? acc['blue'][cur.power]++ : acc['blue'][cur.power] = 1;
-            acc['blue']['total']++;
-            break;
-        case 16:
-            acc['white'][cur.power] ? acc['white'][cur.power]++ : acc['white'][cur.power] = 1;
-            acc['white']['total']++;
-            break;
-        default:
-            acc['mixed'][cur.power] ? acc['mixed'][cur.power]++ : acc['mixed'][cur.power] = 1;
-            acc['mixed']['total']++;
+    if (! ("colors" in cur)) {
+        if (cur.layout === 'transform') {
+            acc['skipped_transform'].push(cur);
+            return acc;
+        }
+        if (cur.layout === 'double_faced_token') {
+            acc['skipped_double_faced_token'].push(cur);
+            return acc;
+        }
+        if (cur.layout === 'modal_dfc') {
+            acc['skipped_modal_dfc'].push(cur);
+            return acc;
+        }
+        if (cur.layout === 'reversible_card') {
+            acc['skipped_reversible_card'].push(cur);
+            return acc;
+        }
+        acc['skipped_other'].push(cur);
+        return acc;
+    }
+    if (! ("power" in cur)) {
+        acc['skipped_power'].push(cur);
+        return acc;
+    }
+    let power = cur.cmc.toString();
+    if (cur.colors.length === 0) {
+        acc['colorless'][power] ? acc['colorless'][power]++ : acc['colorless'][power] = 1;
+        acc['colorless']['total']++;
+    } else {
+        let color = get_card_color(cur)
+        acc[color][power] ? acc[color][power]++ : acc[color][power] = 1;
+        acc[color]['total']++;
     }
     acc['total']++;
     return acc;
@@ -123,7 +153,13 @@ const power_count_by_color = Object.keys(cards).reduce((acc, curr) => {
     blue: {total: 0},      // color code: 8
     white: {total: 0},     // color code: 16
     mixed: {total: 0},
-    total: 0});
+    total: 0,
+    skipped_transform: [],
+    skipped_double_faced_token: [],
+    skipped_modal_dfc: [],
+    skipped_reversible_card: [],
+    skipped_other: [],
+    skipped_power: []});
 
 const toughness_count = Object.keys(cards).reduce((acc, curr) => {
     const cur = cards[curr];
@@ -134,34 +170,38 @@ const toughness_count = Object.keys(cards).reduce((acc, curr) => {
 
 const toughness_count_by_color = Object.keys(cards).reduce((acc, curr) => {
     const cur = cards[curr];
-    switch (cur.colors) {
-        case 0:
-            acc['colorless'][cur.toughness] ? acc['colorless'][cur.toughness]++ : acc['colorless'][cur.toughness] = 1;
-            acc['colorless']['total']++;
-            break;
-        case 1:
-            acc['green'][cur.toughness] ? acc['green'][cur.toughness]++ : acc['green'][cur.toughness] = 1;
-            acc['green']['total']++;
-            break;
-        case 2:
-            acc['red'][cur.toughness] ? acc['red'][cur.toughness]++ : acc['red'][cur.toughness] = 1;
-            acc['red']['total']++;
-            break;
-        case 4:
-            acc['black'][cur.toughness] ? acc['black'][cur.toughness]++ : acc['black'][cur.toughness] = 1;
-            acc['black']['total']++;
-            break;
-        case 8:
-            acc['blue'][cur.toughness] ? acc['blue'][cur.toughness]++ : acc['blue'][cur.toughness] = 1;
-            acc['blue']['total']++;
-            break;
-        case 16:
-            acc['white'][cur.toughness] ? acc['white'][cur.toughness]++ : acc['white'][cur.toughness] = 1;
-            acc['white']['total']++;
-            break;
-        default:
-            acc['mixed'][cur.toughness] ? acc['mixed'][cur.toughness]++ : acc['mixed'][cur.toughness] = 1;
-            acc['mixed']['total']++;
+    if (! ("colors" in cur)) {
+        if (cur.layout === 'transform') {
+            acc['skipped_transform'].push(cur);
+            return acc;
+        }
+        if (cur.layout === 'double_faced_token') {
+            acc['skipped_double_faced_token'].push(cur);
+            return acc;
+        }
+        if (cur.layout === 'modal_dfc') {
+            acc['skipped_modal_dfc'].push(cur);
+            return acc;
+        }
+        if (cur.layout === 'reversible_card') {
+            acc['skipped_reversible_card'].push(cur);
+            return acc;
+        }
+        acc['skipped_other'].push(cur);
+        return acc;
+    }
+    if (! ("toughness" in cur)) {
+        acc['skipped_toughness'].push(cur);
+        return acc;
+    }
+    let toughness = cur.toughness.toString();
+    if (cur.colors.length === 0) {
+        acc['colorless'][toughness] ? acc['colorless'][toughness]++ : acc['colorless'][toughness] = 1;
+        acc['colorless']['total']++;
+    } else {
+        let color = get_card_color(cur)
+        acc[color][toughness] ? acc[color][toughness]++ : acc[color][toughness] = 1;
+        acc[color]['total']++;
     }
     acc['total']++;
     return acc;
@@ -172,7 +212,13 @@ const toughness_count_by_color = Object.keys(cards).reduce((acc, curr) => {
     blue: {total: 0},      // color code: 8
     white: {total: 0},     // color code: 16
     mixed: {total: 0},
-    total: 0});
+    total: 0,
+    skipped_transform: [],
+    skipped_double_faced_token: [],
+    skipped_modal_dfc: [],
+    skipped_reversible_card: [],
+    skipped_other: [],
+    skipped_toughness: []});
 
 const power_toughness_diff_count = Object.keys(cards).reduce((acc, curr) => {
     const cur = cards[curr];
@@ -237,16 +283,16 @@ const set_size_count = Object.keys(cards).reduce((acc, curr) => {
 // let set_count_2 = Object.keys(sets).length;
 // sets['set_count'] = set_count_2;
 
-const faces_data = await readFile(fileURLToPath(import.meta.resolve("./faces.json")), "utf-8");
-const faces = JSON.parse(faces_data);
+// const faces_data = await readFile(fileURLToPath(import.meta.resolve("./faces.json")), "utf-8");
+// const faces = JSON.parse(faces_data);
 
-const sets_data = await readFile(fileURLToPath(import.meta.resolve("./sets-jq.json")), "utf-8");
-const sets = JSON.parse(sets_data);
+// const sets_data = await readFile(fileURLToPath(import.meta.resolve("./sets-jq.json")), "utf-8");
+// const sets = JSON.parse(sets_data);
 
-for (const code in sets) {
-    const size = set_size_count[code];
-    sets[code]['size'] = size;
-}
+// for (const code in sets) {
+//     const size = set_size_count[code];
+//     sets[code]['size'] = size;
+// }
 
 /* const color_distribution = Object.keys(cmc_count_by_color).map(color => {
     if (color === 'total') {
@@ -279,7 +325,8 @@ const color_order = function(colorname) {
 }
 const color_distribution = new Array();
 for (const [key, value] of Object.entries(cmc_count_by_color)) {
-    if (key !== 'total') {
+    const valid_colors = ["white", "black", "red", "green", "blue", "mixed", "colorless"]
+    if (valid_colors.includes(key)) {
         const obj = {};
         obj['color'] = key;
         obj['total'] = value['total'];
@@ -288,7 +335,7 @@ for (const [key, value] of Object.entries(cmc_count_by_color)) {
     }
 }
 
-process.stdout.write(JSON.stringify({cards: {layout_count: layout_count,
+const data = {cards: {layout_count: layout_count,
                                              cmc_count: cmc_count, 
                                              cmc_count_by_color: cmc_count_by_color,
                                              power_count: power_count,
@@ -300,5 +347,17 @@ process.stdout.write(JSON.stringify({cards: {layout_count: layout_count,
                                              set_size_count: set_size_count,
                                              color_distribution: color_distribution,
                                              cards: cards},
-                                     faces: {faces: faces},
-                                     sets:  {sets: sets}}));
+                                    //  faces: {faces: faces},
+                                    //  sets:  {sets: sets}
+                                    };
+
+
+process.stdout.write(JSON.stringify({
+    // raw: raw,
+    // cards: cards_old,
+    // filtered: filtered,
+    // kinds: kinds,
+    data: data,
+    // cards_new: cards_new,
+    // sld: cards_old['sld'].flat()
+}));
