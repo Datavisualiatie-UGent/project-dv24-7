@@ -5,8 +5,7 @@ title: Influence of color
 # Influence of color
 
 ```js
-const data = FileAttachment("./data/mtg-loader.json").json();
-const data_new = FileAttachment("./data/mtg.json").json();
+const data = FileAttachment("./data/mtg.json").json();
 ```
 
 ## Card Color Distribution
@@ -15,7 +14,7 @@ Black, white, red, green and blue are the five core colors of Magic: The Gatheri
 
 ```js
 import {pie_chart_color_distribution} from "./data/mtg-graphs.js";
-const color_distribution = data_new.data.cards.color_distribution;
+const color_distribution = data.data.cards.color_distribution;
 display(pie_chart_color_distribution(color_distribution));
 ```
 
@@ -35,5 +34,5 @@ const attribute = view(Inputs.select(attributes, {value: "mana cost", label: "At
 import {attribute_bars_by_color_d3} from "./data/mtg-graphs.js";
 const color_left = color1;
 const color_right = color2;
-display(attribute_bars_by_color_d3(data_new.data.cards, color_left, color_right, attribute));
+display(attribute_bars_by_color_d3(data.data.cards, color_left, color_right, attribute));
 ```
