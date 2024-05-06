@@ -3,8 +3,9 @@ import * as Plot from "npm:@observablehq/plot";
 
 const marginTop = 20, marginBottom = 40, marginLeft = 40, marginRight = 20;
 
-export const color_per_year_area = (data) => {
+export const color_per_year_area = (data, width = 640) => {
     return Plot.plot({
+        width: width,
         color: {
             type: 'categorical',
             legend: true,

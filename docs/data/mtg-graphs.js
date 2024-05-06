@@ -125,10 +125,10 @@ export function pie_chart_set_type_distribution(typeData) {
   return svg.node();
 }
 
-export function pie_chart_color_distribution(colorData) {
+export function pie_chart_color_distribution(colorData, width = 500, height = 500) {
     // Specify the chart’s dimensions.
-  const width = 500;
-  const height = Math.min(width, 500);
+//   width = Math.min(width, height);
+//   height = Math.min(width, height);
 
   // Create the color scale.
   const color = d3.scaleOrdinal()
