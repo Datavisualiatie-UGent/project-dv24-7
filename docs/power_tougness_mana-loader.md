@@ -5,8 +5,10 @@ title: Power, Toughness and Mana Cost
 ```js
 const data = await FileAttachment('./data/ptm.json').json();
 
-const data_filtered = (source, filter, mana_filter) => {
-    const filter_set = () => filter === 'All' ? source : source.filter(d => d.set === filter);
+const data_filtered = (source, filter, mana_filter, color_filter) => {
+    const col = color_filter.toLowerCase();
+    const filter_color = () => col === 'all' ? source : source.filter(d => d.color === col);
+    const filter_set = () => filter === 'All' ? filter_color() : filter_color().filter(d => d.set === filter);
     return mana_filter === 'All' ? filter_set() : filter_set().filter(d => d.mana_cost === mana_filter);
 };
 
@@ -28,9 +30,10 @@ const mana_slider_ptm = view(Inputs.range(
 ```
 
 ```js
+console.log(data.ptm);
 display(html`
     <div style="display: grid; grid-template-columns: 1fr 1fr; column-gap: 20px; row-gap: 20px;">
-    ${color_ptm.map(col => cards_color_power(col, data_filtered(data.ptm, set_ptm, show_mana_ptm ? 'All' : mana_slider_ptm)))}
+    ${color_ptm.map(col => cards_color_power(col, data_filtered(data.ptm, set_ptm, show_mana_ptm ? 'All' : mana_slider_ptm, col)))}
     </div>
 `);
 ```
@@ -47,7 +50,7 @@ const property_rarity = view(Inputs.select(['Power', 'Toughness', 'Mana Cost'], 
 ```js
 display(html`
     <div style="display: grid; grid-template-columns: 1fr 1fr; column-gap: 20px; row-gap: 20px;">
-    ${color_rarity.map(col => cards_color_rarity(col, data_filtered(data.ptm, set_rarity, 'All'), property_rarity.toLowerCase().replace(' ', '_')))}
+    ${color_rarity.map(col => cards_color_rarity(col, data_filtered(data.ptm, set_rarity, 'All', col), property_rarity.toLowerCase().replace(' ', '_')))}
     </div>
 `);
 ```
