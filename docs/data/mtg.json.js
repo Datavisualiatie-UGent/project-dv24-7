@@ -53,28 +53,28 @@ const cmc_count = Object.keys(cards).reduce((acc, curr) => {
 const cmc_count_by_color = Object.keys(cards).reduce((acc, curr) => {
     const cur = cards[curr];
     if (! ("cmc" in cur)) {
-        acc['skipped_cmc'].push(cur);
         return acc;
+        acc['skipped_cmc'].push(cur);
     }
     if (! ("colors" in cur)) {
         if (cur.layout === 'transform') {
-            acc['skipped_transform'].push(cur);
             return acc;
+            acc['skipped_transform'].push(cur);
         }
         if (cur.layout === 'double_faced_token') {
-            acc['skipped_double_faced_token'].push(cur);
             return acc;
+            acc['skipped_double_faced_token'].push(cur);
         }
         if (cur.layout === 'modal_dfc') {
-            acc['skipped_modal_dfc'].push(cur);
             return acc;
+            acc['skipped_modal_dfc'].push(cur);
         }
         if (cur.layout === 'reversible_card') {
-            acc['skipped_reversible_card'].push(cur);
             return acc;
+            acc['skipped_reversible_card'].push(cur);
         }
-        acc['skipped_other'].push(cur);
         return acc;
+        acc['skipped_other'].push(cur);
     }
     let cmc = cur.cmc.toString();
     if (cur.colors.length === 0) {
@@ -113,27 +113,27 @@ const power_count_by_color = Object.keys(cards).reduce((acc, curr) => {
     const cur = cards[curr];
     if (! ("colors" in cur)) {
         if (cur.layout === 'transform') {
-            acc['skipped_transform'].push(cur);
             return acc;
+            acc['skipped_transform'].push(cur);
         }
         if (cur.layout === 'double_faced_token') {
-            acc['skipped_double_faced_token'].push(cur);
             return acc;
+            acc['skipped_double_faced_token'].push(cur);
         }
         if (cur.layout === 'modal_dfc') {
-            acc['skipped_modal_dfc'].push(cur);
             return acc;
+            acc['skipped_modal_dfc'].push(cur);
         }
         if (cur.layout === 'reversible_card') {
-            acc['skipped_reversible_card'].push(cur);
             return acc;
+            acc['skipped_reversible_card'].push(cur);
         }
-        acc['skipped_other'].push(cur);
         return acc;
+        acc['skipped_other'].push(cur);
     }
     if (! ("power" in cur)) {
-        acc['skipped_power'].push(cur);
         return acc;
+        acc['skipped_power'].push(cur);
     }
     let power = cur.cmc.toString();
     if (cur.colors.length === 0) {
@@ -172,27 +172,27 @@ const toughness_count_by_color = Object.keys(cards).reduce((acc, curr) => {
     const cur = cards[curr];
     if (! ("colors" in cur)) {
         if (cur.layout === 'transform') {
-            acc['skipped_transform'].push(cur);
             return acc;
+            acc['skipped_transform'].push(cur);
         }
         if (cur.layout === 'double_faced_token') {
-            acc['skipped_double_faced_token'].push(cur);
             return acc;
+            acc['skipped_double_faced_token'].push(cur);
         }
         if (cur.layout === 'modal_dfc') {
-            acc['skipped_modal_dfc'].push(cur);
             return acc;
+            acc['skipped_modal_dfc'].push(cur);
         }
         if (cur.layout === 'reversible_card') {
-            acc['skipped_reversible_card'].push(cur);
             return acc;
+            acc['skipped_reversible_card'].push(cur);
         }
-        acc['skipped_other'].push(cur);
         return acc;
+        acc['skipped_other'].push(cur);
     }
     if (! ("toughness" in cur)) {
-        acc['skipped_toughness'].push(cur);
         return acc;
+        acc['skipped_toughness'].push(cur);
     }
     let toughness = cur.toughness.toString();
     if (cur.colors.length === 0) {
@@ -336,17 +336,18 @@ for (const [key, value] of Object.entries(cmc_count_by_color)) {
 }
 
 const data = {cards: {layout_count: layout_count,
-                                             cmc_count: cmc_count, 
+                                             //cmc_count: cmc_count, 
                                              cmc_count_by_color: cmc_count_by_color,
-                                             power_count: power_count,
+                                             //power_count: power_count,
                                              power_count_by_color: power_count_by_color,
-                                             toughness_count: toughness_count, 
+                                             //toughness_count: toughness_count, 
                                              toughness_count_by_color: toughness_count_by_color,
-                                             power_toughness_diff_count: power_toughness_diff_count,
-                                             power_toughness_difference_count_by_color: power_toughness_difference_count_by_color,
-                                             set_size_count: set_size_count,
+                                             //power_toughness_diff_count: power_toughness_diff_count,
+                                             //power_toughness_difference_count_by_color: power_toughness_difference_count_by_color,
+                                             //set_size_count: set_size_count,
                                              color_distribution: color_distribution,
-                                             cards: cards},
+                                             //cards: cards
+                                            },
                                     //  faces: {faces: faces},
                                     //  sets:  {sets: sets}
                                     };
