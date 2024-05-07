@@ -23,10 +23,13 @@ import {cards_color_power} from './components/power_tougness_mana-loader.js';
 const color_ptm = view(Inputs.checkbox(color_options, {label: "Color", value: ["All"]}));
 const set_ptm = view(Inputs.select(sets, {value: "All", label: "Sets"}));
 const show_mana_ptm = view(Inputs.toggle({label: "Show all mana costs", value: true}));
-const mana_slider_ptm = view(Inputs.range(
+```
+```js
+const mana_slider_ptm_input = Inputs.range(
     [0, 16],
-    {step: 1, value: 1, label: 'Mana Cost'}
-));
+    {step: 1, value: 1, label: 'Mana Cost', disabled: show_mana_ptm ? true : false}
+)
+const mana_slider_ptm = view(mana_slider_ptm_input)
 ```
 
 ```js
