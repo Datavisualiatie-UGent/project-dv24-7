@@ -77,7 +77,7 @@ const data_cards_info = await FileAttachment('./data/cards_color_pricing_artists
     <span class="big">${(new Set(data_cards_info.card_info.artist.map(card => card.artist))).size}</span>
   </div>
   <div class="card">
-    <h2>Price most expensive card:</h2>
+    <h2>Price most expensive card</h2>
     <span class="big">€ ${Math.max(...data_cards_info.card_info.prices.map(d => d.price))}</span>
   </div>
 </div>
@@ -119,46 +119,40 @@ import {reprints} from './components/evolution-loader.js';
 
 ## Cards: A short introduction
 
-
+<div>
+In magic the gathering, cards are aaa In magic the gathering, cards are the essential building blocks of the game. Each card contains a whole range of information. Each part of the card will be explained here.
+</div>
+<br>
 
 <div class="imageflex">
-  ${FileAttachment("w17-22-shivan-dragon.jpg").image({height: 350})}
+  ${FileAttachment("w17-22-shivan-dragon.jpg").image({height: 500})}
 
-  <p class="imageflexcontent">In magic the gathering, cards are </p>
-</div>
-
-#### Card Name
-
-#### Mana Cost
-
-#### Card Type
-
-#### Card Text
-
-#### Flavor Text
-
-#### Card Name
+  <div>
+  <h4> Card Name </h4>
+  The name of the card can be found at the top left of a card. Each different card has a unique name.
   
+  <h4> Mana Cost </h4>
+  The top left of the card contains the mana cost. During the game, you can play land in certain colors. The mana cost corresponds with how many of these land cards you need to play that specific card. If a color is present, this means that you need that specific color of land. If a number is present, in the example 4, this means that you can also need 4 additional lands, but they can be any color.
 
-<!-- <div class="container">
-  <div class="image">
-    ${FileAttachment("w17-22-shivan-dragon.jpg").image({height: 400})}
+  <h4> Card Color </h4>
+  A cards color is determined by its mana cost. You can either have no color aka colorless, red, white, green, blue, black or multiple colors. A card with more than one color is called a multicolored card.
+
+  <h4> Card Type </h4>
+  The card type is located directly underneath the artwork on the card. The first word represents the class of card. The second word describes to which specific member of that class the card belongs.
+
+  <h4> Card Text </h4>
+  The card text is located underneath the card type and describes potential additional properties of a card and extra effects. A cards text often contains certain keywords. A card with more keywords is considered to be more complex, while less keywords refer to more simple cards.
+
+  <h4> Power and Toughness</h4>
+  A cards power and toughness is located in the bottom right corner. Power is found on the left while toughness is on the right. These values essentially represent the cards attack and defense.
   </div>
-  <div class="text">
-    <h1>This is a beautiful picture.</h1>
-  </div>
-</div> -->
-
-
-```js
-FileAttachment("color.jpg").image({height: 40})
-```
+</div>
 
 ---
 
-## Dataset: Scryfall
+## Dataset - Scryfall
 
-We used [Scryfall.com](https://scryfall.com/) for our data.
+[Scryfall.com](https://scryfall.com/) serves as a search engine for Macic: The Gathering cards. You can look up cards and find info about them. Additionally, they provide their dataset freely through a download or through a [REST API](https://scryfall.com/docs/api). We used the Scryfall dataset for this project. Each day, the dataset is updated and updated locally through scryfalls API to keep everything up to date with the newest releases.
 
 ---
 
