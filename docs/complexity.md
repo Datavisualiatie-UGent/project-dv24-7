@@ -1,22 +1,10 @@
 ---
-title: Small Test Jonas
+title: Card Complexity
 ---
 
 ```js
 const timing = await FileAttachment('./data/set_timing.json').json();
 const complexity_data = await FileAttachment('./data/complexity.json').json();
-```
-
-## Time between releases (in months)
-```js
-import {set_release_time} from './components/renderers-loader.js';
-display(set_release_time(timing.timing_data));
-```
-
-## Sets per year
-```js
-import {sets_per_year} from './components/renderers-loader.js';
-display(sets_per_year(timing.timing_data.per_year));
 ```
 
 ## Evolution of set complexity

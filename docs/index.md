@@ -108,7 +108,7 @@ import {reprints} from './components/evolution-loader.js';
 <h4> Further Reading: </h4>
 <div class="grid grid-cols-4">
   <div class="card">
-    <h3>Find out more about cards in Magic: The Gathering on <a href="cards-loader">this page</a></h3>
+    <h3>Find out more about cards in Magic: The Gathering on <a href="cards">this page</a></h3>
   </div>
   <div class="card">
     <h3>Find out more about sets in Magic: The Gathering on <a href="sets">this page</a></h3>
@@ -145,6 +145,26 @@ In magic the gathering, cards are aaa In magic the gathering, cards are the esse
 
   <h4> Power and Toughness</h4>
   A cards power and toughness is located in the bottom right corner. Power is found on the left while toughness is on the right. These values essentially represent the cards attack and defense.
+  </div>
+</div>
+
+<br>
+<h4> Further Reading: </h4>
+<div class="grid grid-cols-4">
+  <div class="card">
+    <h3>Find out more about cards in Magic: The Gathering on our <a href="cards">card analysation page</a>.</h3>
+  </div>
+  <div class="card">
+    <h3>Find out more about sets in Magic: The Gathering on our <a href="set page">page about Magic sets</a>.</h3>
+  </div>
+  <div class="card">
+    <h3>Find out more about complexity in Magic: The Gathering on our <a href="complexity">page about complexity</a>.</h3>
+  </div>
+  <div class="card">
+    <h3>Find out more about color in Magic: The Gathering on the <a href="color">color page</a>.</h3>
+  </div>
+  <div class="card">
+    <h3>Find out more about how power, toughness and mana cost relate to each other on <a href="power_toughness_mana">this page</a>.</h3>
   </div>
 </div>
 

@@ -1,15 +1,22 @@
 ---
-title: Card info (dataloader)
+title: Card info
 ---
 
 ```js
 const data = await FileAttachment('./data/cards_color_pricing_artists.json').json();
+const data_evolution = await FileAttachment('./data/cards_evolution.json').json();
 
 const data_filtered = (source, filter) => {
     return filter === 'All' ? source : source.filter(d => d.set === filter);
 };
 
 const sets = ['All', ...data.sets.filtered.map(set => set.name).sort()];
+```
+
+## Reprints vs New Cards
+```js
+import {reprints} from './components/evolution-loader.js';
+display(html`<div style="display: grid; grid-template-columns: 1fr 1fr; column-gap: 20px; row-gap: 20px;">${reprints(data_evolution.reprint_dist)}${reprints(data_evolution.reprint_dist, true)}</div>`)
 ```
 
 ## Number of Cards per Color per Card Type
@@ -59,4 +66,10 @@ const number_artists = view(
 ```js
 display(artists(data_filtered(data.card_info.artist, set_for_artists), parseInt(number_artists)));
 display(artists_reprints(data_filtered(data.card_info.artist, set_for_artists), parseInt(number_artists)));
+```
+
+## Evolution of rarity distribution
+```js
+import {rarity_per_year_area} from './components/evolution-loader.js';
+display(rarity_per_year_area(data_evolution.rarity_dist));
 ```
