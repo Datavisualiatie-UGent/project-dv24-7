@@ -57,7 +57,7 @@ export function pie_chart_set_type_distribution(typeData) {
 
   // Create the color scale.
   const color = d3.scaleOrdinal()
-    // .domain(['black', 'red', 'white', 'green', 'blue', 'mixed', 'colorless'])
+    // .domain(['black', 'red', 'white', 'green', 'blue', 'multicolor', 'colorless'])
     // .range(['#C4D0D0', '#F09EA7', '#FAFABE', '#C1EBC0', '#C7CAFF', '#CDABEB', '#F6C2F3'])
       .domain(typeData.distribution.sort((a,b) => d3.descending(a.count, b.count)).map(d => d.count))
       .range(d3.quantize(t => d3.interpolateSpectral(t * 0.8 + 0.1), typeData.distribution.length).reverse())
@@ -132,12 +132,12 @@ export function pie_chart_color_distribution(colorData, width = 500, height = 50
 
   // Create the color scale.
   const color = d3.scaleOrdinal()
-    .domain(['black', 'red', 'white', 'green', 'blue', 'mixed', 'colorless'])
+    .domain(['black', 'red', 'white', 'green', 'blue', 'multicolor', 'colorless'])
     .range(['#C4D0D0', '#F09EA7', '#FAFABE', '#C1EBC0', '#C7CAFF', '#CDABEB', '#F6C2F3'])
     //   .domain(colorData.map(d => d.color))
     //   .range(d3.quantize(t => d3.interpolateSpectral(t * 0.8 + 0.1), colorData.length).reverse())
 //   const color = function (colorname) {
-//     if (colorname === 'mixed') {
+//     if (colorname === 'multicolor') {
 //         return 'purple';
 //     }
 //     if (colorname === 'colorless') {
@@ -300,12 +300,12 @@ export function attribute_bars_by_color_d3(cards, colorLeft, colorRight, attribu
 
     
   const color = d3.scaleOrdinal()
-  .domain(['black', 'red', 'white', 'green', 'blue', 'mixed', 'colorless'])
+  .domain(['black', 'red', 'white', 'green', 'blue', 'multicolor', 'colorless'])
   .range(['#C4D0D0', '#F09EA7', '#FAFABE', '#C1EBC0', '#C7CAFF', '#CDABEB', '#F6C2F3'])
 
     let colorLeft_color = color(colorLeft)
     // let colorLeft_color = colorLeft
-    // if (colorLeft === "mixed") {
+    // if (colorLeft === "multicolor") {
     //     colorLeft_color = "purple";
     // }
     // if (colorLeft === "colorless") {
@@ -317,7 +317,7 @@ export function attribute_bars_by_color_d3(cards, colorLeft, colorRight, attribu
 
     let colorRight_color = color(colorRight)
     // let colorRight_color = colorRight 
-    // if (colorRight === "mixed") {
+    // if (colorRight === "multicolor") {
     //     colorRight_color = "purple";
     // }
     // if (colorRight === "colorless") {
@@ -522,7 +522,7 @@ export function cmc_bars_by_color_d3(dataLeft, dataRight, colorLeft, colorRight,
     console.log(data);
 
     let colorLeft_color = colorLeft 
-    if (colorLeft === "mixed") {
+    if (colorLeft === "multicolor") {
         colorLeft_color = "purple";
     }
     if (colorLeft === "colorless") {
@@ -533,7 +533,7 @@ export function cmc_bars_by_color_d3(dataLeft, dataRight, colorLeft, colorRight,
     }
 
     let colorRight_color = colorRight 
-    if (colorRight === "mixed") {
+    if (colorRight === "multicolor") {
         colorRight_color = "purple";
     }
     if (colorRight === "colorless") {
@@ -663,7 +663,7 @@ export function power_bars_by_color_d3(dataLeft, dataRight, colorLeft, colorRigh
     console.log(data);
 
     let colorLeft_color = colorLeft 
-    if (colorLeft === "mixed") {
+    if (colorLeft === "multicolor") {
         colorLeft_color = "purple";
     }
     if (colorLeft === "colorless") {
@@ -674,7 +674,7 @@ export function power_bars_by_color_d3(dataLeft, dataRight, colorLeft, colorRigh
     }
 
     let colorRight_color = colorRight 
-    if (colorRight === "mixed") {
+    if (colorRight === "multicolor") {
         colorRight_color = "purple";
     }
     if (colorRight === "colorless") {
@@ -804,7 +804,7 @@ export function toughness_bars_by_color_d3(dataLeft, dataRight, colorLeft, color
     console.log(data);
 
     let colorLeft_color = colorLeft 
-    if (colorLeft === "mixed") {
+    if (colorLeft === "multicolor") {
         colorLeft_color = "purple";
     }
     if (colorLeft === "colorless") {
@@ -815,7 +815,7 @@ export function toughness_bars_by_color_d3(dataLeft, dataRight, colorLeft, color
     }
 
     let colorRight_color = colorRight 
-    if (colorRight === "mixed") {
+    if (colorRight === "multicolor") {
         colorRight_color = "purple";
     }
     if (colorRight === "colorless") {

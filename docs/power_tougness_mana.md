@@ -13,7 +13,7 @@ const data_filtered = (source, filter, mana_filter, color_filter) => {
 };
 
 const sets = ['All', ...data.sets.map(set => set.name).sort()];
-const color_options = ['All', 'Red', 'Blue', 'Green', 'White', 'Black', 'Mixed', 'Colorless'];
+const color_options = ['All', 'Red', 'Blue', 'Green', 'White', 'Black', 'Multicolor', 'Colorless'];
 ```
 
 ## Power vs Toughness per Color per Mana Cost

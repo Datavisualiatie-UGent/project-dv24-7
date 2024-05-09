@@ -6,7 +6,7 @@ export const cards_color_type = (data) => {
         marginLeft: 80,
         padding: 0.05,
         x: {grid: true, label: 'Card type', domain: ['Creature', 'Artifact', 'Enchantment', 'Sorcery', 'Instant', 'Multi']}, // 'Land', 'Card', 'Emblem', 'Phenomenon', 'Plane'
-        y: {grid: true, label: 'Card color', domain: ['red', 'blue', 'green', 'white', 'black', 'mixed', 'colorless']},
+        y: {grid: true, label: 'Card color', domain: ['red', 'blue', 'green', 'white', 'black', 'multicolor', 'colorless']},
         color: {legend: true, scheme: 'YlGnBu', label: "Card count"},
         marks: [
             Plot.rect(

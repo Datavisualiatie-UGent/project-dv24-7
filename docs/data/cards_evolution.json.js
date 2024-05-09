@@ -5,7 +5,7 @@ import * as d3 from "d3";
 const {cards,filtered} = await load_base_data();
 
 const color_fn = (subset, year, cards) => {
-    const counts = { colorless: 0, green: 0, red: 0, black: 0, blue: 0, white: 0, mixed: 0 };
+    const counts = { colorless: 0, green: 0, red: 0, black: 0, blue: 0, white: 0, multicolor: 0 };
 
     const card_col = [];
     let cards_set = 0;
@@ -27,7 +27,7 @@ const color_fn = (subset, year, cards) => {
         cards_.forEach(col => {
             if(col.length === 0) counts.colorless++;
             else if(col.length === 1) counts[get_color_by_code(col[0])]++;
-            else counts.mixed++;
+            else counts.multicolor++;
         });
     });
 

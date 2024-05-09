@@ -11,7 +11,7 @@ export const color_per_year_area = (data, width = 640) => {
             legend: true,
             label: 'Color',
             range: ['#C4D0D0', '#F09EA7', '#FAFABE', '#C1EBC0', '#C7CAFF', '#CDABEB', '#F6C2F3'],
-            domain: ['black', 'red', 'white', 'green', 'blue', 'mixed', 'colorless']
+            domain: ['black', 'red', 'white', 'green', 'blue', 'multicolor', 'colorless']
         },
         x: {
             label: "Time [year]",
@@ -36,7 +36,7 @@ export const color_per_year_area = (data, width = 640) => {
                         white: {value: d => `${d.map.white} - ${(d.map.white * 100 / d.total).toFixed(2)}%`, label: 'White'},
                         green: {value: d => `${d.map.green} - ${(d.map.green * 100 / d.total).toFixed(2)}%`, label: 'Green'},
                         blue: {value: d => `${d.map.blue} - ${(d.map.blue * 100 / d.total).toFixed(2)}%`, label: 'Blue'},
-                        mixed: {value: d => `${d.map.mixed} - ${(d.map.mixed * 100 / d.total).toFixed(2)}%`, label: 'Mixed'},
+                        multicolor: {value: d => `${d.map.multicolor} - ${(d.map.multicolor * 100 / d.total).toFixed(2)}%`, label: 'multicolor'},
                         colorless: {value: d => `${d.map.colorless} - ${(d.map.colorless * 100 / d.total).toFixed(2)}%`, label: 'Colorless'},
                     },
                     tip: {
@@ -50,11 +50,11 @@ export const color_per_year_area = (data, width = 640) => {
                             white: true,
                             green: true,
                             blue: true,
-                            mixed: true,
+                            multicolor: true,
                             colorless: true,
                         }
                     },
-                    order: ['black', 'red', 'white', 'green', 'blue', 'mixed', 'colorless'],
+                    order: ['black', 'red', 'white', 'green', 'blue', 'multicolor', 'colorless'],
                 }),
             Plot.ruleY([0])
         ]

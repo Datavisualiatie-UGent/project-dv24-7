@@ -32,7 +32,7 @@ display(cards_color_type(data_filtered(data.card_info.color_type, set_for_color_
 ```
 
 ## Card Prices
-A bar graph showing the N most expensive cards. You can select if you want to see this for all sets or a specific set. The number of cards displayed can be changed using the slider.
+A bar graph showing the ${tex`n`} most expensive cards. You can select if you want to see this for all sets or a specific set. The number of cards displayed can be changed using the slider.
 
 ```js
 import {cards_prices} from './components/card_info-loader.js';

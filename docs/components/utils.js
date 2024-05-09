@@ -36,7 +36,7 @@ export const color_scheme_map = (color_name) => {
         black: 'Greys',
         blue: 'Blues',
         white: 'YlOrBr',
-        mixed: 'Purples',
+        multicolor: 'Purples',
         all: 'YlGnBu'
     }
     return map[color_name.toLowerCase()];
@@ -57,7 +57,7 @@ export const set_selector_filter = (all_sets, selected_set) => {
 
 export const get_card_color = (card) => {
     if (card.colors.length > 1) {
-        return 'mixed';
+        return 'multicolor';
     } else {
         return  get_color_by_code(card.colors[0]);
     }

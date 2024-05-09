@@ -62,8 +62,8 @@ const cmc_count_by_color = Object.keys(cards).reduce((acc, curr) => {
             acc['white']['total']++;
             break;
         default:
-            acc['mixed'][cur.cmc] ? acc['mixed'][cur.cmc]++ : acc['mixed'][cur.cmc] = 1;
-            acc['mixed']['total']++;
+            acc['multicolor'][cur.cmc] ? acc['multicolor'][cur.cmc]++ : acc['multicolor'][cur.cmc] = 1;
+            acc['multicolor']['total']++;
     }
     acc['total']++;
     return acc;
@@ -73,7 +73,7 @@ const cmc_count_by_color = Object.keys(cards).reduce((acc, curr) => {
     black: {total: 0},     // color code: 4
     blue: {total: 0},      // color code: 8
     white: {total: 0},     // color code: 16
-    mixed: {total: 0},
+    multicolor: {total: 0},
     total: 0});
 
 const power_count = Object.keys(cards).reduce((acc, curr) => {
@@ -111,8 +111,8 @@ const power_count_by_color = Object.keys(cards).reduce((acc, curr) => {
             acc['white']['total']++;
             break;
         default:
-            acc['mixed'][cur.power] ? acc['mixed'][cur.power]++ : acc['mixed'][cur.power] = 1;
-            acc['mixed']['total']++;
+            acc['multicolor'][cur.power] ? acc['multicolor'][cur.power]++ : acc['multicolor'][cur.power] = 1;
+            acc['multicolor']['total']++;
     }
     acc['total']++;
     return acc;
@@ -122,7 +122,7 @@ const power_count_by_color = Object.keys(cards).reduce((acc, curr) => {
     black: {total: 0},     // color code: 4
     blue: {total: 0},      // color code: 8
     white: {total: 0},     // color code: 16
-    mixed: {total: 0},
+    multicolor: {total: 0},
     total: 0});
 
 const toughness_count = Object.keys(cards).reduce((acc, curr) => {
@@ -160,8 +160,8 @@ const toughness_count_by_color = Object.keys(cards).reduce((acc, curr) => {
             acc['white']['total']++;
             break;
         default:
-            acc['mixed'][cur.toughness] ? acc['mixed'][cur.toughness]++ : acc['mixed'][cur.toughness] = 1;
-            acc['mixed']['total']++;
+            acc['multicolor'][cur.toughness] ? acc['multicolor'][cur.toughness]++ : acc['multicolor'][cur.toughness] = 1;
+            acc['multicolor']['total']++;
     }
     acc['total']++;
     return acc;
@@ -171,7 +171,7 @@ const toughness_count_by_color = Object.keys(cards).reduce((acc, curr) => {
     black: {total: 0},     // color code: 4
     blue: {total: 0},      // color code: 8
     white: {total: 0},     // color code: 16
-    mixed: {total: 0},
+    multicolor: {total: 0},
     total: 0});
 
 const power_toughness_diff_count = Object.keys(cards).reduce((acc, curr) => {
@@ -211,8 +211,8 @@ const power_toughness_difference_count_by_color = Object.keys(cards).reduce((acc
             acc['white']['total']++;
             break;
         default:
-            acc['mixed'][diff] ? acc['mixed'][diff]++ : acc['mixed'][diff] = 1;
-            acc['mixed']['total']++;
+            acc['multicolor'][diff] ? acc['multicolor'][diff]++ : acc['multicolor'][diff] = 1;
+            acc['multicolor']['total']++;
     }
     acc['total']++;
     return acc;
@@ -222,7 +222,7 @@ const power_toughness_difference_count_by_color = Object.keys(cards).reduce((acc
     black: {total: 0},     // color code: 4
     blue: {total: 0},      // color code: 8
     white: {total: 0},     // color code: 16
-    mixed: {total: 0},
+    multicolor: {total: 0},
     total: 0});
 
 const set_size_count = Object.keys(cards).reduce((acc, curr) => {
@@ -269,7 +269,7 @@ const color_order = function(colorname) {
             return 3;
         case 'blue':
             return 4;
-        case 'mixed':
+        case 'multicolor':
             return 5;
         case 'colorless':
             return 6;

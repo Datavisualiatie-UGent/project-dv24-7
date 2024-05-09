@@ -93,7 +93,7 @@ const cmc_count_by_color = Object.keys(cards).reduce((acc, curr) => {
     black: {total: 0},     // color code: 4
     blue: {total: 0},      // color code: 8
     white: {total: 0},     // color code: 16
-    mixed: {total: 0},
+    multicolor: {total: 0},
     total: 0,
     skipped_transform: [],
     skipped_double_faced_token: [],
@@ -152,7 +152,7 @@ const power_count_by_color = Object.keys(cards).reduce((acc, curr) => {
     black: {total: 0},     // color code: 4
     blue: {total: 0},      // color code: 8
     white: {total: 0},     // color code: 16
-    mixed: {total: 0},
+    multicolor: {total: 0},
     total: 0,
     skipped_transform: [],
     skipped_double_faced_token: [],
@@ -211,7 +211,7 @@ const toughness_count_by_color = Object.keys(cards).reduce((acc, curr) => {
     black: {total: 0},     // color code: 4
     blue: {total: 0},      // color code: 8
     white: {total: 0},     // color code: 16
-    mixed: {total: 0},
+    multicolor: {total: 0},
     total: 0,
     skipped_transform: [],
     skipped_double_faced_token: [],
@@ -257,8 +257,8 @@ const power_toughness_difference_count_by_color = Object.keys(cards).reduce((acc
             acc['white']['total']++;
             break;
         default:
-            acc['mixed'][diff] ? acc['mixed'][diff]++ : acc['mixed'][diff] = 1;
-            acc['mixed']['total']++;
+            acc['multicolor'][diff] ? acc['multicolor'][diff]++ : acc['multicolor'][diff] = 1;
+            acc['multicolor']['total']++;
     }
     acc['total']++;
     return acc;
@@ -268,7 +268,7 @@ const power_toughness_difference_count_by_color = Object.keys(cards).reduce((acc
     black: {total: 0},     // color code: 4
     blue: {total: 0},      // color code: 8
     white: {total: 0},     // color code: 16
-    mixed: {total: 0},
+    multicolor: {total: 0},
     total: 0});
 
 const set_size_count = Object.keys(cards).reduce((acc, curr) => {
@@ -315,7 +315,7 @@ const color_order = function(colorname) {
             return 3;
         case 'blue':
             return 4;
-        case 'mixed':
+        case 'multicolor':
             return 5;
         case 'colorless':
             return 6;
@@ -325,7 +325,7 @@ const color_order = function(colorname) {
 }
 const color_distribution = new Array();
 for (const [key, value] of Object.entries(cmc_count_by_color)) {
-    const valid_colors = ["white", "black", "red", "green", "blue", "mixed", "colorless"]
+    const valid_colors = ["white", "black", "red", "green", "blue", "multicolor", "colorless"]
     if (valid_colors.includes(key)) {
         const obj = {};
         obj['color'] = key;
