@@ -163,6 +163,8 @@ export const complexity = (sets, {w,h}={w:1200,h:600}) => {
 
     const reg = regression.polynomial(sets.map(set => [days_since(sets[0].release, set.release), set.avg]), { order: 2, precision: 7 });
     const reg_line = sets.map(set => ({release: set.release, avg: reg.predict(days_since(sets[0].release, set.release))[1] }));
+    console.log(reg);
+    console.log(sets[0].release);
 
     svg.append('path')
         .datum(reg_line)
@@ -262,8 +264,6 @@ export const complexity_by_kind = (kinds, sets, {w,h}={w:1200,h:600}) => {
             .on('mouseleave', mouse_leave);
 
         const reg = regression.polynomial(datum.map(set => [days_since(datum[0].release, set.release), set.avg]), { order: 2, precision: 7 });
-        console.log(`${kind} (${datum.length})`);
-        console.log(reg);
         const reg_line = datum.map(set => ({release: set.release, avg: reg.predict(days_since(datum[0].release, set.release))[1] }));
 
         svg.append('path')
