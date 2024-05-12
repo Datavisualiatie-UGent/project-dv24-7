@@ -55,7 +55,7 @@ export const cards_color_rarity = (color, data, property) => {
     return Plot.plot({
         marginLeft: 100,
         padding: 0,
-        x: {grid: true,  domain: Array.from({length: 20}, (_, i) => i-1)},
+        x: {grid: true,  domain: Array.from({length: 20}, (_, i) => i-1), label: property.replace('_', ' ')},
         fy: {domain: rarities},
         color: {legend: true, scheme: color_scheme_map(color)},
         marks: [

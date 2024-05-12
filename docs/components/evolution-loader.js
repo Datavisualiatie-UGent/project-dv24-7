@@ -149,7 +149,7 @@ export const reprints = (data, normalized=false) => {
 
     return Plot.plot({
         x: {tickFormat: "", interval: 1, label: "Time [year]", dx: 1},
-        y: {label: "Fraction of cards [%]", grid: true, percent: true},
+        y: {label: "Fraction of cards [%]", grid: true, percent: normalized},
         color: {legend: true, scheme: "Spectral", label: "Release type"},
         marks: [
             Plot.barY(data, config),
@@ -173,7 +173,7 @@ export const set_types = (data, normalized=false) => {
 
     return Plot.plot({
         x: {tickFormat: "", interval: 1, label: "Time [year]", dx: 1},
-        y: {label: "Number of sets", grid: true, percent: true},
+        y: {label: "Number of sets", grid: true, percent: normalized},
         color: {legend: true, scheme: 'spectral', label: 'Set Type'},
         marks: [
             Plot.barY(data, config)
