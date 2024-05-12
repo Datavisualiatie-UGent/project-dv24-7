@@ -3,8 +3,8 @@ title: Set Info
 ---
 
 ```js
-const data = await FileAttachment('./data/cards_evolution.json').json();
-const timing = await FileAttachment('./data/set_timing.json').json();
+const timing = FileAttachment('./data/set_timing.json').json();
+const data = FileAttachment('./data/cards_evolution.json').json();
 ```
 
 ## Time between releases (in months)

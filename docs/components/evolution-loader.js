@@ -164,7 +164,6 @@ export const set_types = (data, normalized=false) => {
         y: "count",
         fill: "type",
         tip: true,
-        order: set_types,
     }
 
     if (normalized) {

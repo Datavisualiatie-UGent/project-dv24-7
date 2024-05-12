@@ -20,7 +20,6 @@ const cards_ptm = filtered.map(set => {
     return [...cards[set.code].flat()]
         .filter(cards_ptm_filter)
         .map(card => ({
-            card: card,
             color: card.colors.length === 0 ? 'colorless' : get_card_color(card),
             type: get_card_type(card),
             power: parseFloat(card.power),

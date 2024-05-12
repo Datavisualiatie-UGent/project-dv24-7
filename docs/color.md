@@ -6,7 +6,7 @@ title: Influence of color
 
 ```js
 const data = FileAttachment("./data/mtg.json").json();
-const data_evolution = await FileAttachment('./data/cards_evolution.json').json();
+const data_evolution = FileAttachment('./data/cards_evolution.json').json();
 ```
 
 ## Card Color Distribution
@@ -42,5 +42,9 @@ display(attribute_bars_by_color_d3(data.data.cards, color_left, color_right, att
 ```js
 import {color_per_year_area} from './components/evolution-loader.js';
 display(color_per_year_area(data_evolution.color_dist));
+```
+Source
+```js
+display(data_evolution);
 ```
 

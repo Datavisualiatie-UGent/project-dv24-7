@@ -52,8 +52,6 @@ export const cards_color_rarity = (color, data, property) => {
         .filter(r => data.some(d => d.rarity === r));
     const config = {x:property, fy: "rarity", inset: 0.1, interval: 1, tip: true}
 
-    console.log(data);
-
     return Plot.plot({
         marginLeft: 100,
         padding: 0,

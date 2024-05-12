@@ -130,6 +130,5 @@ process.stdout.write(JSON.stringify({
     rarity_dist: rarity_dist,
     reprint_dist: reprint_dist,
     set_type_dist: set_type_dist,
-    set_type_dist_pie: set_type_dist_pie,
-    cards: cards
+    set_type_dist_pie: set_type_dist_pie
 }));
