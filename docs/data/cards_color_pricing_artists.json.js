@@ -8,7 +8,6 @@ const cards_color_type = filtered.map(set => {
     return [...cards[set.code].flat()]
         .filter(card_tc_filter)
         .map(card => ({
-            card: card,
             color: card.colors.length !== 0 ? get_card_color(card) : 'colorless',
             type: get_card_type(card),
             set: set.name

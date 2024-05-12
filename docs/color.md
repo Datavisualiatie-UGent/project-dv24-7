@@ -7,7 +7,7 @@ In the universe of Magic: The Gathering color isn't just a visual characteristic
 
 ```js
 const data = FileAttachment("./data/mtg.json").json();
-const data_evolution = await FileAttachment('./data/cards_evolution.json').json();
+const data_evolution = FileAttachment('./data/cards_evolution.json').json();
 const data_color_type = await FileAttachment('./data/cards_color_pricing_artists.json').json();
 const data_filtered = (source, filter) => {
     return filter === 'All' ? source : source.filter(d => d.set === filter);

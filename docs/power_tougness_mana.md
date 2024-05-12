@@ -33,7 +33,6 @@ const mana_slider_ptm = view(mana_slider_ptm_input)
 ```
 
 ```js
-console.log(data.ptm);
 display(html`
     <div style="display: grid; grid-template-columns: 1fr 1fr; column-gap: 20px; row-gap: 20px;">
     ${color_ptm.map(col => cards_color_power(col, data_filtered(data.ptm, set_ptm, show_mana_ptm ? 'All' : mana_slider_ptm, col)))}

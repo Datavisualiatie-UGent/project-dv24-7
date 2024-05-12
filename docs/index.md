@@ -58,9 +58,8 @@ toc: false
 
 
 ```js
-const cards_data = await FileAttachment("./data/mtg.json").json();
-const evolution_data = await FileAttachment('./data/cards_evolution.json').json();
-const data_cards_info = await FileAttachment('./data/cards_color_pricing_artists.json').json();
+const evolution_data = FileAttachment('./data/cards_evolution.json').json();
+const data_cards_info = FileAttachment('./data/cards_color_pricing_artists.json').json();
 ```
 
 <div class="grid grid-cols-4">
