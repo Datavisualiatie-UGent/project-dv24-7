@@ -40,7 +40,7 @@ display(set_release_time(timing.timing_data));
 
 ## Set types
 <div>
-As previously mentioned, each set is of a certain type. This type is descriptive of the sets purpose. The first and most important set type is the expansion. Expansions feature the latest legal cards in the standard ruleset. Usually a few consequtive sets have an overarching theme. Each of these themes can define the current meta and determine how the game is played. Older sets are often taken out of rotation. Another type are the box sets. These are sold as packages often containing one or more preconstructed decks. Starter sets on the other hand feature a simple way of learning the game. Sets such as the master series feature exclusively reprints. Finally some sets such as masters or planechase sets are exclusively mae for a different playstyle than the standard format. We're now gonna delve deeper into how common each of these sets are.
+As previously mentioned, each set is of a certain type. This type is descriptive of the sets purpose. The first and most important set type is the expansion. Expansions feature the latest legal cards in the standard ruleset. Usually a few consecutive sets have an overarching theme. Each of these themes can define the current meta and determine how the game is played. Older sets are often taken out of rotation. Another type are the box sets. These are sold as packages often containing one or more pre-constructed decks. Starter sets on the other hand feature a simple way of learning the game. Sets such as the master series feature exclusively reprints. Finally, some sets such as masters or planechase sets are exclusively made for a different playstyle than the standard format. We're now going to delve deeper into how common each of these sets are.
 </div>
 <br>
 
@@ -56,7 +56,7 @@ display(pie_chart_set_type_distribution(data.set_type_dist_pie));
 
 ### Evolution of Set Type Distribution
 <div>
-The distribution of sets released each year can be seen below. Both in absolute numbers as relative to the total number of sets released that year. Both views provide a different interpretation. we can see that not all set types see new releases each year. The only type that is present each year is the expansions. Box sets also seem to be a staple, such as starter set. The core set for example has been recently discontinued. And planechase sets have only been released in 2009, 1012 and 2016. Intrestlingly, starter sets have only been released in 2 small burst with the first one being between 1996 adn 2000 and the second one between 2016 and 2020. 
+The distribution of sets released each year can be seen below. Both in absolute numbers as relative to the total number of sets released that year. Both views provide a different interpretation. we can see that not all set types see new releases each year. The only type that is present each year is the expansions. Box sets also seem to be a staple, such as starter set. The core set for example has been recently discontinued. And planechase sets have only been released in 2009, 1012 and 2016. Interestingly, starter sets have only been released in 2 small bursts with the first one being between 1996 and 2000, and the second one between 2016 and 2020. 
 </div>
 <div>
 Finally, this plot also emphasises the conclusion drawn at the top of this page. The number of released sets each years had been relatively stable until 2014. After 2014, the number of sets released has been steadily increasing

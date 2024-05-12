@@ -20,7 +20,7 @@ const sets = ['All', ...data_color_type.sets.filtered.map(set => set.name).sort(
 
 ## Card Color Distribution
 <div>
-We will start by looking at the overall distribution of colors in the game. The pie chart below shows how these colors are distributed. The main colors, White, Blue, Black, Red, and Green, seem to be represented equally, with multicolored cards being represented less than cards with a single color and cards with no color being the most common category.
+We will start by looking at the overall distribution of colors in the game. The pie chart below shows how these colors are distributed. The main colors, White, Blue, Black, Red, and Green, seem to be represented equally, with multicolored cards being represented less than cards with a single color and colorless cards being the most common category.
 </div>
 
 ```js
@@ -41,7 +41,7 @@ display(color_per_year_area(data_evolution.color_dist));
 
 ## Card Attributes By Color
 <div>
-Different colors focus on different strategies and cards of the same color often have a lot of synergy together. Some colors are more focused on defense, represented by higher average toughness while other colors might be more powerfull. In the plot below, you can select two color categories to compare. Next you can select in which category you want to compare the colors. You can look at the difference in toughness, power or mana cost.
+Different colors focus on different strategies and cards of the same color often have a lot of synergy together. Some colors are more focused on defense, represented by higher average toughness while other colors might be more powerful. In the plot below, you can select two color categories to compare. Next you can select in which category you want to compare the colors. You can look at the difference in toughness, power or mana cost.
 </div>
 
 ```js

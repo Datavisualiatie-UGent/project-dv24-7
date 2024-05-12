@@ -232,34 +232,6 @@ export function cmc_bars_by_color_left(dataLeft, {width, height} = {}) {
 export function attribute_bars_by_color_d3(cards, colorLeft, colorRight, attribute, {w, h} = {}) {
     const width = 800/3*2;
     const height = 600/3*2;
-    /* const barPadding = 1;
-    // d3.select("div.d3-cmc-bars-by-color").append("svg").attr("class", "d3-cmc-bars-by-color").attr("width", width).attr("height", height);
-    // d3.select("svg.d3-cmc-bars-by-color")
-    
-    const xScale = d3.scaleLinear()
-
-    // const data = Object.entries(dataLeft);
-    const data = dataLeft;
-    console.log("hey");
-    console.log(dataLeft);
-    console.log(data);
-    const svg = d3.create("svg")
-    .attr("width", width)
-    .attr("height", height);;
-
-    svg.append("g")
-      .selectAll("rect")
-    //   .data(dataLeft.entries())
-      .data(data)
-      .enter()
-      .append("rect")
-      .attr("x", d => width - parseInt(d.mana_cost) * 4)
-      .attr("y", (d, i) => i * (height / data.length))
-      .attr("width", d => d.count)
-      .attr("height", d => height / data.length - barPadding)
-    //   .style("x", d => parseInt(d[0]))
-    //   .style("y", d => parseInt(d[1]/4) + "px");
-    return svg.node(); */
     let dataLeft;
     let dataRight;
     if (attribute === "mana cost") {
@@ -392,24 +364,6 @@ export function attribute_bars_by_color_d3(cards, colorLeft, colorRight, attribu
         //     .attr("dy", "0.35em")
         //     .text(d => d.count);
       
-    svg.append("text")
-        .attr("text-anchor", "middle")
-        .attr("fill", colorLeft_color)
-        .attr("dy", "0.35em")
-        .attr("x", 125)
-        .attr("y", 75)
-        .attr("font-size", 30)
-        .text(colorLeft);
-      
-    svg.append("text")
-        .attr("text-anchor", "middle")
-        .attr("fill", colorRight_color)
-        .attr("dy", "0.35em")
-        .attr("x", width - 125)
-        .attr("y", 75)
-        .attr("font-size", 30)
-        .text(colorRight);
-      
     svg.append("g")
         .call(xAxis);
       
@@ -477,6 +431,24 @@ export function attribute_bars_by_color_d3(cards, colorLeft, colorRight, attribu
         .attr("height", y.bandwidth())
         .append("title")
         .text(d => `${attribute}: ${d[attr]}\ncount: ${d.count}`);
+
+    svg.append("text")
+        .attr("text-anchor", "end")
+        // .attr("fill", colorLeft_color)
+        .attr("dy", "0.35em")
+        .attr("x", 260)
+        .attr("y", height - 50)
+        .attr("font-size", '15px')
+        .text(`${colorLeft} ←`);
+
+    svg.append("text")
+        .attr("text-anchor", "start")
+        // .attr("fill", colorRight_color)
+        .attr("dy", "0.35em")
+        .attr("x", width - 260)
+        .attr("y", height - 50)
+        .attr("font-size", '15px')
+        .text(`→ ${colorRight}`);
       
     return svg.node();
 }
