@@ -27,18 +27,6 @@ import {reprints} from './components/evolution-loader.js';
 display(html`<div style="display: grid; grid-template-columns: 1fr 1fr; column-gap: 20px; row-gap: 20px;">${reprints(data_evolution.reprint_dist)}${reprints(data_evolution.reprint_dist, true)}</div>`)
 ```
 
-## Number of Cards per Color per Card Type
-A heatmap showing how often a card type occurs in a certain color.
-
-```js
-import {cards_color_type} from './components/card_info-loader.js';
-const set_for_color_type = view(Inputs.select(sets, {value: "All", label: "Sets"}));
-```
-
-```js
-display(cards_color_type(data_filtered(data.card_info.color_type, set_for_color_type)));
-```
-
 ## Card Prices
 A bar graph showing the ${tex`n`} most expensive cards. You can select if you want to see this for all sets or a specific set. The number of cards displayed can be changed using the slider.
 
