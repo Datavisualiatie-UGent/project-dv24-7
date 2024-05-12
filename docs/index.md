@@ -104,6 +104,7 @@ import {reprints} from './components/evolution-loader.js';
 </div>
 
 <br>
+<br>
 <h4> Further Reading: </h4>
 <div class="grid grid-cols-4">
   <div class="card">
@@ -113,6 +114,7 @@ import {reprints} from './components/evolution-loader.js';
     <h3>Find out more about sets in Magic: The Gathering on <a href="sets">this page</a></h3>
   </div>
 </div>
+
 
 ---
 
@@ -172,12 +174,16 @@ In magic the gathering, cards are the essential building blocks of the game. Eac
 
 ## Dataset - Scryfall
 
-[Scryfall.com](https://scryfall.com/) serves as a search engine for Macic: The Gathering cards. You can look up cards and find info about them. Additionally, they provide their dataset freely through a download or through a [REST API](https://scryfall.com/docs/api). We used the Scryfall dataset for this project. Each day, the dataset is updated and updated locally through scryfalls API to keep everything up to date with the newest releases.
+<div>
+<a href=https://scryfall.com>Scryfall.com</a> serves as a search engine for Macic: The Gathering cards. You can look up cards and find info about them. Additionally, they provide their dataset freely through a download or through a <a href=https://scryfall.com/docs/api>REST API</a>. We used the Scryfall dataset for this project. Each day, the dataset is updated and updated locally through scryfalls API to keep everything up to date with the newest releases.
+</div>
 
 ---
 
 ## Frameworks
-
-This site is made using [Observable Framework](https://observablehq.com/framework/).
-
-For the plots we used both [Observable Plot](https://observablehq.com/plot/) and [D3](https://d3js.org/).
+<div>
+This site is made using <a href=https://observablehq.com/framework>Observable Framework</a>.
+</div>
+<div>
+For most of the plots and visualisations we used <a href=https://observablehq.com/plot>Observable Plot</a>. For the remaining visualisations we used <a href=https://d3js.org>D3.js</a>. D3 was mostly used in cases where Obsevable Plot was not possible.
+</div>
