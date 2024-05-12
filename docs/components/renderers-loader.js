@@ -16,7 +16,7 @@ export const set_release_time = (sets, {w,h}={w:1200,h:600}) => {
     const year_to_avg = sets.difference_per_year;
 
     const x = mk_utc_x(w, d3.extent(actual, d => d.release)).nice();
-    const y = mk_lin_y(h, d3.extent(actual, d => d.diff));
+    const y = mk_lin_y(h, [0, Math.max(...actual.map(set => set.diff + 1))]);
     const svg = d3.create('svg').attr('width', w).attr('height', h);
 
     const tooltip = d3.select("body")
@@ -77,6 +77,22 @@ export const set_release_time = (sets, {w,h}={w:1200,h:600}) => {
             .x(d => x(new Date(d.year, 5, 1)))
             .y(d => y(d.avg))
         );
+
+    svg.append('text')
+        .attr('class', 'x label')
+        .attr('text-anchor', 'end')
+        .attr('font-size', '15px')
+        .attr('x', w - 20)
+        .attr('y', h - 45)
+        .text('Year →');
+
+    svg.append('text')
+        .attr('class', 'y label')
+        .attr('font-size', '15px')
+        .attr('x', 45)
+        .attr('y', 15)
+        .attr('dy', '.75em')
+        .text('↑ Months since previous set');
 
     return svg.node();
 };
@@ -175,6 +191,22 @@ export const complexity = (sets, {w,h}={w:1200,h:600}) => {
             .x(d => x(d.release))
             .y(d => y(d.avg))
         );
+
+    svg.append('text')
+        .attr('class', 'x label')
+        .attr('text-anchor', 'end')
+        .attr('font-size', '15px')
+        .attr('x', w - 20)
+        .attr('y', h - 45)
+        .text('Year →');
+
+    svg.append('text')
+        .attr('class', 'y label')
+        .attr('font-size', '15px')
+        .attr('x', 45)
+        .attr('y', 15)
+        .attr('dy', '.75em')
+        .text('↑ Average card complexity (#words)');
 
     return svg.node();
 };
@@ -286,7 +318,7 @@ export const complexity_by_kind = (kinds, sets, {w,h}={w:1200,h:600}) => {
         .enter()
         .append('circle')
         .attr('cx', (d, i) => marginLeft + 20 + Math.floor(i / per_col) * 100)
-        .attr('cy', (d, i) => marginTop + 20 + Math.floor(i % per_col) * 20)
+        .attr('cy', (d, i) => marginTop + 30 + Math.floor(i % per_col) * 20)
         .attr('r', 5)
         .attr('fill', d => color_for(d))
 
@@ -295,13 +327,29 @@ export const complexity_by_kind = (kinds, sets, {w,h}={w:1200,h:600}) => {
         .enter()
         .append('text')
         .attr('x', (d, i) => marginLeft + 30 + Math.floor(i / per_col) * 100)
-        .attr('y', (d, i) => marginTop + 25 + Math.floor(i % per_col) * 20)
-        .text(d => d)
+        .attr('y', (d, i) => marginTop + 35 + Math.floor(i % per_col) * 20)
+        .text(d => d.replace('_', ' '))
         .attr('text-anchor', 'left')
         .style('alignment-baseline', 'bottom')
         .on('click', legend_click)
         .on('mouseover', mouse_move_legend)
         .on('mouseleave', mouse_leave);
+
+    svg.append('text')
+        .attr('class', 'x label')
+        .attr('text-anchor', 'end')
+        .attr('font-size', '15px')
+        .attr('x', w - 20)
+        .attr('y', h - 45)
+        .text('Year →');
+
+    svg.append('text')
+        .attr('class', 'y label')
+        .attr('font-size', '15px')
+        .attr('x', 45)
+        .attr('y', 15)
+        .attr('dy', '.75em')
+        .text('↑ Average card complexity (#words)');
 
     return svg.node();
 }
