@@ -25,7 +25,7 @@ The game of Magic: The Gathering is all about cards. New cards can completely ch
 <br><br>
 The number of new cards has overall stayed relatively stable, we can however observe that since about 2010, the number of new cards have slowly been increasing. The number of new cards in 2024 is lower, but considering that we're not even halfway through the year, 2024 looks to be keeping that trend.
 <br><br>
-The total number of cards released sees more dramatic changes. For example, 2002, 2004 and 2006 saw almost no reprints while 2020 saw a massive number of reprints. This can be explained by the pandemic. With disruptions and more people at home wanting to collect cards, it was easy to focus on reprints rather than making new cards. A similar to the trend in new cards, the number of reprints has also been increasing over the recent years.
+The total number of cards released sees more dramatic changes. For example, 2002, 2004 and 2006 saw almost no reprints while 2020 saw a massive number of reprints. This can be explained by the pandemic. With disruptions and more people at home wanting to collect cards, it was easy to focus on reprints rather than making new cards. 2022 also saw a spike in reprints which is a result of special releases for the 30th aniversary of the game featuring many reprints of classic cards. Similar to the trend seen in new cards, the number of reprints has also slowly been increasing over the recent years.
 </div>
 
 ```js
