@@ -26,7 +26,8 @@ export const cards_prices = (data, n, is_filter = false, order = 'Descending') =
     return Plot.plot({
         marginLeft: 250,
         marginRight: 100,
-        width: 1000,
+        width: 900,
+        height: 55 + 20 * n,
         x: {
             axis: "top",
             grid: true,
@@ -75,6 +76,7 @@ export const artists = (data, n) => {
         marginLeft: 150,
         marginRight: 50,
         width: 900,
+        height: 55 + 20 * n,
         x: {
             axis: "top",
             grid: true,
@@ -110,11 +112,12 @@ export const artists_reprints = (data, n) => {
         marginLeft: 150,
         marginRight: 50,
         width: 900,
-        color: {legend: true, scheme: "Tableau10", tickFormat: d => d ? 'Reprint': 'New Card'},
+        height: 55 + 20 * n,
+        color: {legend: true, scheme: "spectral", tickFormat: d => d ? 'Reprint': 'New Card'},
         x: {
             axis: "top",
             grid: true,
-            label: 'Number cards with art',
+            label: 'Number of cards',
             type: 'linear',
 
         },
@@ -123,20 +126,20 @@ export const artists_reprints = (data, n) => {
         },
         marks: [
             Plot.barX(data, Plot.groupY(
-                {x: "count"},  {
+                {x: d => d[0].reprint ? -d.length: d.length},  {
                     y: "artist",
                     fill: "reprint",
                     reduce: 'min',
-                    tip: true,
-                    sort: {y: "-x", limit: n}
+                    sort: {y: "-x", limit: n},
                 })),
             Plot.ruleY([0]),
             Plot.text(data, Plot.groupY(
-                {x: "count", text: "count"},  {
+                {x: d => d[0].reprint ? -d.length + 15: d.length - 15, text: "count"},  {
                     y: "artist",
+                    z: 'reprint',
+                    'fill': 'white',
                     reduce: 'min',
                     sort: {y: "-x", limit: n},
-                    dx: 12
                 })
             )
         ]
