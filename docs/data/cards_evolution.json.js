@@ -40,7 +40,7 @@ const color_fn = (subset, year, cards) => {
 };
 
 const rarity_fn = (subset, year, cards) => {
-    const counts = { common: 0, uncommon: 0, rare: 0, mythic: 0 };
+    const counts = { common: 0, uncommon: 0, rare: 0, mythic: 0, special: 0, bonus: 0 };
 
     const card_col = [];
     let cards_set = 0;

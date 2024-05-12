@@ -29,11 +29,6 @@ display(complexity(complexity_data.raw.map(d => ({...d, release: new Date(d.rele
 <br><br>
 
 ## Set complexity by kind
-```js
-import {complexity_by_kind} from './components/renderers-loader.js';
-display(complexity_by_kind(complexity_data.kinds, complexity_data.by_kind));
-```
-
 <div>
 Magic: the Gathering's sets are divided into multiple categories (more on those on <a href="sets">the sets page</a>).
 All categories are equal in complexity, but some are more equal than others.
@@ -47,3 +42,8 @@ You can hover over the sets (dots) in the plot to see their details, as well as 
 The regression line can also be enabled by hovering over the legend.
 You can prevent a regression line from disappearing by clicking on its entry in the legend.
 </div>
+
+```js
+import {complexity_by_kind} from './components/renderers-loader.js';
+display(complexity_by_kind(complexity_data.kinds, complexity_data.by_kind));
+```
