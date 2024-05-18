@@ -1,5 +1,7 @@
 name: Publish
 on:
+  schedule: # Run every day at 12:30am
+    - cron: "30 0 * * *"
   workflow_dispatch:
   push:
     branches: ["main"]
