@@ -59,6 +59,18 @@ const color_right = color2;
 display(attribute_bars_by_color_d3(data.data.cards, color_left, color_right, attribute));
 ```
 
+Some insights:
+
+* The distributions have roughly the same shape. This makes sense because the same game is played.
+* **White** has a distribution with **lower mana cost**. It is caused by white have a focus on smaller creatures that help eachother.
+* **Red** is quick and aggressive color. It has power distribution that is higher than the other colors.
+* The **green** graph for power/toughness looks bigger than the other colors. This is because green has a bigger **focus on creature cards**.
+* For **blue**, we see the **opposite effect** because it focusses less on creature cards.
+* **Multicolor** cards have **higher cost and stats**. Combining colors leads to more complex cards which skews towards higher stats.
+* There are a lot of **colorless** cards with mana cost of 0. That is because **land** cards are considered colorless, despite generating mana of a certain color.
+* Many more insights are possible.
+
+
 ## Number of Cards per Color per Card Type
 <div>
 Below, a heatmap is showing how often a card type occurs in a certain color. It is possible to select a certain set or all sets. Most colored cards are creatures, while most colorless cards are artifacts. Blue cards are the most often instant, while sorcery cards are mostly red and black. Enchantments again are mostly white. This tracks with white cards being more defensive.
