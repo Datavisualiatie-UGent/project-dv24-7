@@ -27,11 +27,11 @@ Below, you can find a heat map showing the relation between power and toughness.
 </div>
 <br>
 <div>
-For example, we can see that white is a defenisve color, while red is more focused on attack. Green is a balanced color featuring cards with some of the highest power and toughness values.
+For example, we can see that white is a defensive color, while red is more focused on attack. Green is a balanced color featuring cards with some of the highest power and toughness values.
 </div>
 
 ```js
-import {cards_color_power} from './components/power_tougness_mana-loader.js';
+import {cards_color_power} from './components/power_toughness_mana-loader.js';
 const color_ptm = view(Inputs.checkbox(color_options, {label: "Color", value: ["All"]}));
 const set_ptm = view(Inputs.select(sets, {value: "All", label: "Sets"}));
 const show_mana_ptm = view(Inputs.toggle({label: "Show all mana costs", value: true}));
@@ -54,11 +54,11 @@ display(html`
 
 ## Rarity vs Power, Toughness and Mana Cost
 <div>
-The following plot is a heatmap showing how cards are distributed in terms of rarity. You can select a color (again, or all colors, or even colorless) can be selected to see this data. Multiple colors can be selected to compare the data. Finally, you can select which property you want to compare to rarity. The possible options are power, toughness and mana cost. It is crlear that the most powerful cards are rare and mythic cardss, but this plot also shows that by far, the most cards have a power or toughness of 2 and a mana cost of 3.
+The following plot is a heatmap showing how cards are distributed in terms of rarity. You can select a color (again, or all colors, or even colorless) can be selected to see this data. Multiple colors can be selected to compare the data. Finally, you can select which property you want to compare to rarity. The possible options are power, toughness and mana cost. It is clear that the most powerful cards are rare and mythic cards, but this plot also shows that by far, the most cards have a power or toughness of 2 and a mana cost of 3.
 </div>
 
 ```js
-import {cards_color_rarity} from './components/power_tougness_mana-loader.js';
+import {cards_color_rarity} from './components/power_toughness_mana-loader.js';
 const color_rarity = view(Inputs.checkbox(color_options, {label: "Color", value: ["All"]}));
 const set_rarity = view(Inputs.select(sets, {value: "All", label: "Sets"}));
 const property_rarity = view(Inputs.select(['Power', 'Toughness', 'Mana Cost'], {value: "Power", label: "Property"}));

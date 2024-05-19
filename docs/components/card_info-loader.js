@@ -1,7 +1,6 @@
 import * as Plot from "npm:@observablehq/plot";
 
 export const cards_color_type = (data) => {
-    console.log(data);
     return Plot.plot({
         marginLeft: 80,
         padding: 0.05,

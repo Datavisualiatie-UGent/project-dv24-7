@@ -30,7 +30,7 @@ display(complexity(complexity_data.raw.map(d => ({...d, release: new Date(d.rele
 
 ## Set complexity by kind
 <div>
-Magic: the Gathering's sets are divided into multiple categories (more on those on <a href="sets">the sets page</a>).
+Magic: The Gathering's sets are divided into multiple categories (more on those on <a href="sets">the sets page</a>).
 All categories are equal in complexity, but some are more equal than others.
 It is clear that starter sets (cyan) and core sets (black) are less complex than, e.g. expansion sets (dark blue).
 Looking back at our previous sets, we see that <i>Starter 2000</i> is indeed among the starter sets, with <i>March of the Machine</i> being an expansion set.
