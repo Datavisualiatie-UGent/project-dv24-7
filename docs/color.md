@@ -9,7 +9,7 @@ In the universe of Magic: The Gathering color isn't just a visual characteristic
 <br>
 
 ```js
-const data = FileAttachment("./data/mtg.json").json();
+const data = FileAttachment("./data/color.json").json();
 const data_evolution = FileAttachment('./data/cards_evolution.json').json();
 const data_color_type = await FileAttachment('./data/cards_color_pricing_artists.json').json();
 const data_filtered = (source, filter) => {
@@ -24,7 +24,7 @@ We will start by looking at the overall distribution of colors in the game. The 
 </div>
 
 ```js
-import {pie_chart_color_distribution} from "./components/mtg-graphs.js";
+import {pie_chart_color_distribution} from "./components/color-graphs.js";
 const color_distribution = data.cards.color_distribution;
 display(pie_chart_color_distribution(color_distribution));
 ```
@@ -53,7 +53,7 @@ const attribute = view(Inputs.select(attributes, {value: "mana cost", label: "At
 ```
 
 ```js
-import {attribute_bars_by_color_d3} from "./components/mtg-graphs.js";
+import {attribute_bars_by_color_d3} from "./components/color-graphs.js";
 const color_left = color1;
 const color_right = color2;
 display(attribute_bars_by_color_d3(data.cards, color_left, color_right, attribute));
