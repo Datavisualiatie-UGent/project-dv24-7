@@ -87,7 +87,7 @@ import {reprints} from './components/evolution-loader.js';
 ```
 
 <div class="grid grid-cols-2" style="grid-auto-rows: 504px;">
-  <p>Magic: the gathering (MTG) is the most popular trading card game in the world. It has been captivating players since its inception in 1993 by mathematician Richard Garfield. The cards are printed and published by Wizards of the Coast. MTG combines strategic gameplay with rich lore, making it a beloved staple of both casual and competitive gaming communities. Despite the age of the game, MTG has great longevity and is still very popular to this day with new cards and sets being released frequently <br> <br>
+  <p>Magic: The Gathering (MTG) is the most popular trading card game in the world. It has been captivating players since its inception in 1993 by mathematician Richard Garfield. The cards are printed and published by Wizards of the Coast. MTG combines strategic gameplay with rich lore, making it a beloved staple of both casual and competitive gaming communities. Despite the age of the game, MTG has great longevity and is still very popular to this day with new cards and sets being released frequently <br> <br>
   In MTG, players assume the role of powerful wizards known as Planeswalkers, using decks of spell cards representing magical spells, creatures, artifacts, lands, and even other planeswalkers to defeat their opponents. With thousands of unique cards and a dynamic, ever-evolving metagame, MTG offers endless opportunities for creativity, strategic thinking, and skillful play. <br> <br>
   As an addition to the physical card game, Magic: The Gathering also provides a free online mode in 
 <a href="https://magic.wizards.com/en/mtgarena">MTG Arena</a>. This serves as an easy and accessible playstyle for new players to learn how to play the game. It boasts a comprehensive tutorial and uses the same rules, cards and sets as the TCG.
@@ -121,7 +121,7 @@ import {reprints} from './components/evolution-loader.js';
 ## Cards: A short introduction
 
 <div>
-In magic the gathering, cards are the essential building blocks of the game. Each card contains a whole range of information. Each part of the card will be explained here.
+In Magic: The Gathering, cards are the essential building blocks of the game. Each card contains a whole range of information. Each part of the card will be explained here.
 </div>
 <br>
 
@@ -133,7 +133,7 @@ In magic the gathering, cards are the essential building blocks of the game. Eac
   <p style="padding-left:10px;">The name of the card can be found at the top left of a card. Each different card has a unique name.</p>
   
   <h4> Mana Cost </h4>
-  <p style="padding-left:10px;">The top left of the card contains the mana cost. During the game, you can play land in certain colors. The mana cost corresponds with how many of these land cards you need to play that specific card. If a color is present, this means that you need that specific color of land. If a number is present, in the example 4, this means that you can also need 4 additional lands, but they can be any color.</p>
+  <p style="padding-left:10px;">The top right of the card contains the mana cost. During the game, you can play land in certain colors. The mana cost corresponds with how many of these land cards you need to play that specific card. If a color is present, this means that you need that specific color of land. If a number is present, in the example 4, this means that you can also need 4 additional lands, but they can be any color.</p>
 
   <h4> Card Color </h4>
   <p style="padding-left:10px;">A card's color is determined by its mana cost. You can either have no color (i.e. colorless), red, white, green, blue, black or multiple colors. A card with more than one color is called a multicolored card.</p>
@@ -175,7 +175,7 @@ In magic the gathering, cards are the essential building blocks of the game. Eac
 ## Dataset - Scryfall
 
 <div>
-<a href=https://scryfall.com>Scryfall.com</a> serves as a search engine for Macic: The Gathering cards. You can look up cards and find info about them. Additionally, they provide their dataset freely through a download or through a <a href=https://scryfall.com/docs/api>REST API</a>. We used the Scryfall dataset for this project. Each day, the dataset is updated and updated locally through scryfalls API to keep everything up to date with the newest releases.
+<a href=https://scryfall.com>Scryfall.com</a> serves as a search engine for Macic: The Gathering cards. You can look up cards and find info about them. Additionally, they provide their dataset freely through a download or through a <a href=https://scryfall.com/docs/api>REST API</a>. We used the Scryfall dataset for this project. Each day, the dataset is updated and updated locally through scryfall's API to keep everything up to date with the newest releases.
 </div>
 
 ---
@@ -185,5 +185,5 @@ In magic the gathering, cards are the essential building blocks of the game. Eac
 This site is made using <a href=https://observablehq.com/framework>Observable Framework</a>.
 </div>
 <div>
-For most of the plots and visualisations we used <a href=https://observablehq.com/plot>Observable Plot</a>. For the remaining visualisations we used <a href=https://d3js.org>D3.js</a>. D3 was mostly used in cases where Obsevable Plot was not possible.
+For most of the plots and visualisations we used <a href=https://observablehq.com/plot>Observable Plot</a>. For the remaining visualisations we used <a href=https://d3js.org>D3.js</a>. D3 was mostly used in cases where Observable Plot was not possible.
 </div>
