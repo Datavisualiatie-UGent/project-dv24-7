@@ -50,7 +50,7 @@ Below you can find a pie chart showing all currently released Magic: The Gatheri
 </div>
 
 ```js
-import {pie_chart_set_type_distribution} from "./data/mtg-graphs.js";
+import {pie_chart_set_type_distribution} from "./components/mtg-graphs.js";
 display(pie_chart_set_type_distribution(data.set_type_dist_pie));
 ```
 
