@@ -157,7 +157,7 @@ In Magic: The Gathering, cards are the essential building blocks of the game. Ea
     <h3>Find out more about cards in Magic: The Gathering on our <a href="cards">card analysis page</a>.</h3>
   </div>
   <div class="card">
-    <h3>Find out more about sets in Magic: The Gathering on our <a href="set page">page about Magic sets</a>.</h3>
+    <h3>Find out more about sets in Magic: The Gathering on our <a href="sets">page about Magic sets</a>.</h3>
   </div>
   <div class="card">
     <h3>Find out more about complexity in Magic: The Gathering on our <a href="complexity">page about complexity</a>.</h3>

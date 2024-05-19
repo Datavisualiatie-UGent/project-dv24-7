@@ -31,7 +31,7 @@ For example, we can see that white is a defenisve color, while red is more focus
 </div>
 
 ```js
-import {cards_color_power} from './components/power_tougness_mana-loader.js';
+import {cards_color_power} from './components/power_toughness_mana-loader.js';
 const color_ptm = view(Inputs.checkbox(color_options, {label: "Color", value: ["All"]}));
 const set_ptm = view(Inputs.select(sets, {value: "All", label: "Sets"}));
 const show_mana_ptm = view(Inputs.toggle({label: "Show all mana costs", value: true}));
@@ -58,7 +58,7 @@ The following plot is a heatmap showing how cards are distributed in terms of ra
 </div>
 
 ```js
-import {cards_color_rarity} from './components/power_tougness_mana-loader.js';
+import {cards_color_rarity} from './components/power_toughness_mana-loader.js';
 const color_rarity = view(Inputs.checkbox(color_options, {label: "Color", value: ["All"]}));
 const set_rarity = view(Inputs.select(sets, {value: "All", label: "Sets"}));
 const property_rarity = view(Inputs.select(['Power', 'Toughness', 'Mana Cost'], {value: "Power", label: "Property"}));
