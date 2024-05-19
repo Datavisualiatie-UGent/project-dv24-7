@@ -55,7 +55,7 @@ display(cards_prices(data_filtered(data.card_info.prices, set_for_prices), parse
 
 ## Most Notable Artists
 <div>
-Magic the gathering is not only just a card game. Some people in the community are also just collectors. These people don't play the game, but collect the cards for their artwork and/or as investments. Each card features artwork made by an artist. Some artists only design the artwork of a single card, while others can be seen very frequently. Th stacked bar chart below shows how many cards an artist has designed. On the left, the number of reprinted cards with their artwork is shown, while on the right the number of unique cards is shown. The bars are sorted by the number of unique cards made by the artist. Once again it is possible to select a set or to see this over all cards and to change the number of cards displayed.
+Magic: The Gathering is not only just a card game. Some people in the community are also just collectors. These people don't play the game, but collect the cards for their artwork and/or as investments. Each card features artwork made by an artist. Some artists only design the artwork of a single card, while others can be seen very frequently. The stacked bar chart below shows how many cards an artist has designed. On the left, the number of reprinted cards with their artwork is shown, while on the right the number of unique cards is shown. The bars are sorted by the number of unique cards made by the artist. Once again it is possible to select a set or to see this over all cards and to change the number of cards displayed.
 </div>
 
 ```js
