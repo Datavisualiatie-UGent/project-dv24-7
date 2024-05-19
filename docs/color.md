@@ -31,7 +31,7 @@ display(pie_chart_color_distribution(color_distribution));
 
 ## Evolution of color distribution
 <div>
-Not only is it interesting to look at how colors are distributed over all cards, but changes in this distribution over the years are also yield very interesting insights. In the plot below we can see that the distribution of single colored cards have stayed relatively stable over the years. However, this has not been the case for colorless and multicolored cards. This is most noteable between 2002 and 2004 where barely any multicolored cards were produced. The lack of multicolored cards was mostly compensated by more colorless cards. Furthermore, in recent years, the proportion of multicolored and colorless cards have increased at the expense of the other colors.
+Not only is it interesting to look at how colors are distributed over all cards, but changes in this distribution over the years also yield very interesting insights. In the plot below we can see that the distribution of single colored cards have stayed relatively stable over the years. However, this has not been the case for colorless and multicolored cards. This is most noteable between 2002 and 2004 where barely any multicolored cards were produced. The lack of multicolored cards was mostly compensated by more colorless cards. Furthermore, in recent years, the proportion of multicolored and colorless cards have increased at the expense of the other colors.
 </div>
 
 ```js
@@ -41,7 +41,10 @@ display(color_per_year_area(data_evolution.color_dist));
 
 ## Card Attributes By Color
 <div>
-Different colors focus on different strategies and cards of the same color often have a lot of synergy together. Some colors are more focused on defense, represented by higher average toughness while other colors might be more powerful. In the plot below, you can select two color categories to compare. Next you can select in which category you want to compare the colors. You can look at the difference in toughness, power or mana cost.
+Different colors focus on different strategies and cards of the same color often have a lot of synergy together. Some colors are more focused on defense, represented by higher average toughness while other colors might be more powerful while attacking using the power attribute. In the plot below, you can select two color categories to compare. Next you can select for which attribute you want to compare the colors. You can look at the difference in toughness, power or mana cost.
+</div>
+<div>
+<b>Note:</b> attribute values larger than 8, lower than 0 and other special values (like <i>0.5</i>, <i>∞</i>, <i>?</i>,...) have been omitted. We justify this because they are few in number and don't give much insight into color characteristics.
 </div>
 
 ```js
