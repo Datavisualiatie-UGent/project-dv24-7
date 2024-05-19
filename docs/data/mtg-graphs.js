@@ -1,239 +1,150 @@
 import * as d3 from "npm:d3";
 import * as Plot from "npm:@observablehq/plot";
 
-export function timeline(events, {width, height} = {}) {
-  return Plot.plot({
-    width,
-    height,
-    marginTop: 30,
-    x: {nice: true, label: null, tickFormat: ""},
-    y: {axis: null},
-    marks: [
-      Plot.ruleX(events, {x: "year", y: "y", markerEnd: "dot", strokeWidth: 2.5}),
-      Plot.ruleY([0]),
-      Plot.text(events, {x: "year", y: "y", text: "name", lineAnchor: "bottom", dy: -10, lineWidth: 10, fontSize: 12})
-    ]
-  });
-}
+export function pie_chart_set_type_distribution(typeData, width = 500, height = 500) {
+    // Maps data sorted on count to a spectral colorscheme.
+    const color = d3.scaleOrdinal()
+                    .domain(typeData.distribution.sort((a,b) => d3.descending(a.count, b.count))
+                                                                  .map(d => d.count))
+                    .range(d3.quantize(t => d3.interpolateSpectral(t * 0.8 + 0.1), typeData.distribution.length)
+                             .reverse())
 
-export function layout_bars(data, {width, height} = {}) {
-    // return Plot.rectY(data, Plot.binX({y: "count"}, {x: d3.randomNormal()})).plot();
-    return Plot.plot({
-        width: width,
-        height: height,
-        marks: [
-            Plot.barX(data, {
-                marginLeft: 100,
-                // y: (d) => d.layout,
-                // x: (d) => d.count
-                x: 'count',
-                y: 'layout'
-            })
-        ]
-    });
-}
+    // Create the pie layout and arc generator.
+    const pie = d3.pie()
+                  .sort((a,b) => d3.descending(a.count, b.count))
+                  .value(d => d.count);
 
-export function cmc_bars(data, {width, height} = {}) {
-    // return Plot.rectY(data, Plot.binX({y: "count"}, {x: d3.randomNormal()})).plot();
-    return Plot.plot({
-        width: width,
-        height: height,
-        marks: [
-            Plot.barX(data, {
-                marginLeft: 100,
-                // y: (d) => d.layout,
-                // x: (d) => d.count
-                x: 'count',
-                y: d => parseInt(d['mana_cost'])
-            })
-        ]
-    });
-}
+    // Pie slices start from center of pie and extend to value of outerradius.
+    const arc = d3.arc()
+                  .innerRadius(0)
+                  .outerRadius(Math.min(width, height) / 2 - 1);
 
-export function pie_chart_set_type_distribution(typeData) {
-    // Specify the chart’s dimensions.
-  const width = 500;
-  const height = 500;
+    // Calculates radius on which we wish to place our labels
+    const labelRadius = arc.outerRadius()() * 0.8;
 
-  // Create the color scale.
-  const color = d3.scaleOrdinal()
-    // .domain(['black', 'red', 'white', 'green', 'blue', 'multicolor', 'colorless'])
-    // .range(['#C4D0D0', '#F09EA7', '#FAFABE', '#C1EBC0', '#C7CAFF', '#CDABEB', '#F6C2F3'])
-      .domain(typeData.distribution.sort((a,b) => d3.descending(a.count, b.count)).map(d => d.count))
-      .range(d3.quantize(t => d3.interpolateSpectral(t * 0.8 + 0.1), typeData.distribution.length).reverse())
+    // A separate arc generator for labels.
+    const arcLabel = d3.arc()
+                       .innerRadius(labelRadius)
+                       .outerRadius(labelRadius);
 
-  // Create the pie layout and arc generator.
-  const pie = d3.pie()
-      .sort((a,b) => d3.descending(a.count, b.count))
-      .value(d => d.count);
+    const arcs = pie(typeData.distribution);
 
-  const arc = d3.arc()
-      .innerRadius(0)
-      .outerRadius(Math.min(width, height) / 2 - 1);
+    // Create the SVG container.
+    const svg = d3.create("svg")
+                  .attr("width", width)
+                  .attr("height", height)
+                  .attr("viewBox", [-width / 2, -height / 2, width, height])
+                  .attr("style", "max-width: 100%; height: auto; font: 10px sans-serif;");
 
-  const labelRadius = arc.outerRadius()() * 0.8;
+    // Add a sector path for each value.
+    svg.append("g")
+       .attr("stroke", "white")
+       .selectAll()
+       .data(arcs)
+       .join("path")
+       .attr("fill", d => color(d.data.count))
+       .attr("d", arc)
+       .append("title")
+       .text(d => `${d.data.type}: ${d.data.count}\n${d.data.type === 'other' ? 'set types: arsenal & planechase' : ''}`);
 
-  // A separate arc generator for labels.
-  const arcLabel = d3.arc()
-      .innerRadius(labelRadius)
-      .outerRadius(labelRadius);
+    // Create a new arc generator to place a label close to the edge.
+    // The label shows the value if there is enough room.
+    svg.append("g")
+       .attr("text-anchor", "middle")
+       .selectAll()
+       .data(arcs)
+       .join("text")
+       .attr("transform", d => `translate(${arcLabel.centroid(d)})`)
+       .call(text => text.append("tspan")
+                         .attr("y", "-0.4em")
+                         .attr("font-size", 12)
+                         .attr("font-weight", "bold")
+                         .text(d => d.data.type))
+       .call(text => text.filter(d => (d.endAngle - d.startAngle) > 0.1)
+                         .append("tspan")
+                         .attr("x", 0)
+                         .attr("y", "0.7em")
+                         .attr("font-size", 12)
+                         .attr("fill-opacity", 0.7)
+                         .text(d => d.data.count));
 
-  console.log("HELPIO")
-  console.log(typeData.distribution)
-  const arcs = pie(typeData.distribution);
-
-  // Create the SVG container.
-  const svg = d3.create("svg")
-      .attr("width", width)
-      .attr("height", height)
-      .attr("viewBox", [-width / 2, -height / 2, width, height])
-      .attr("style", "max-width: 100%; height: auto; font: 10px sans-serif;");
-
-  // Add a sector path for each value.
-  svg.append("g")
-      .attr("stroke", "white")
-    .selectAll()
-    .data(arcs)
-    .join("path")
-      .attr("fill", d => color(d.data.count))
-      .attr("d", arc)
-    .append("title")
-      .text(d => `${d.data.type}: ${d.data.count}\n${d.data.type === 'other' ? 'set types: arsenal & planechase' : ''}`);
-
-  // Create a new arc generator to place a label close to the edge.
-  // The label shows the value if there is enough room.
-  svg.append("g")
-      .attr("text-anchor", "middle")
-    .selectAll()
-    .data(arcs)
-    .join("text")
-      .attr("transform", d => `translate(${arcLabel.centroid(d)})`)
-      .call(text => text.append("tspan")
-          .attr("y", "-0.4em")
-        //   .attr("fill", "gray")
-          .attr("font-size", 12)
-          .attr("font-weight", "bold")
-          .text(d => d.data.type))
-      .call(text => text.filter(d => (d.endAngle - d.startAngle) > 0.1).append("tspan")
-          .attr("x", 0)
-          .attr("y", "0.7em")
-        //   .attr("fill", "gray")
-          .attr("font-size", 12)
-          .attr("fill-opacity", 0.7)
-          .text(d => d.data.count));
-
-  return svg.node();
+    return svg.node();
 }
 
 export function pie_chart_color_distribution(colorData, width = 500, height = 500) {
-    // Specify the chart’s dimensions.
-//   width = Math.min(width, height);
-//   height = Math.min(width, height);
+    // Link card colors to manually chosen color representation
+    const color = d3.scaleOrdinal()
+                    .domain(['black', 'red', 'white', 'green', 'blue', 'multicolor', 'colorless'])
+                    .range(['#C4D0D0', '#F09EA7', '#FAFABE', '#C1EBC0', '#C7CAFF', '#CDABEB', '#F6C2F3'])
 
-  // Create the color scale.
-  const color = d3.scaleOrdinal()
-    .domain(['black', 'red', 'white', 'green', 'blue', 'multicolor', 'colorless'])
-    .range(['#C4D0D0', '#F09EA7', '#FAFABE', '#C1EBC0', '#C7CAFF', '#CDABEB', '#F6C2F3'])
-    //   .domain(colorData.map(d => d.color))
-    //   .range(d3.quantize(t => d3.interpolateSpectral(t * 0.8 + 0.1), colorData.length).reverse())
-//   const color = function (colorname) {
-//     if (colorname === 'multicolor') {
-//         return 'purple';
-//     }
-//     if (colorname === 'colorless') {
-//         return 'gray';
-//     } 
-//     if (colorname === 'white') {
-//         return 'lightgray';
-//     }
-//     return colorname;
-//   }
+    // Create the pie layout and arc generator.
+    const pie = d3.pie()
+                  .sort((a,b) => d3.ascending(a.order, b.order))
+                  .value(d => d.total);
 
-  // Create the pie layout and arc generator.
-  const pie = d3.pie()
-      .sort((a,b) => d3.ascending(a.order, b.order))
-      .value(d => d.total);
+    // Pie slices start from center of pie and extend to value of outerradius.
+    const arc = d3.arc()
+                  .innerRadius(0)
+                  .outerRadius(Math.min(width, height) / 2 - 1);
 
-  const arc = d3.arc()
-      .innerRadius(0)
-      .outerRadius(Math.min(width, height) / 2 - 1);
+    // Calculates radius on which we wish to place our labels
+    const labelRadius = arc.outerRadius()() * 0.8;
 
-  const labelRadius = arc.outerRadius()() * 0.8;
+    // A separate arc generator for labels.
+    const arcLabel = d3.arc()
+                       .innerRadius(labelRadius)
+                       .outerRadius(labelRadius);
 
-  // A separate arc generator for labels.
-  const arcLabel = d3.arc()
-      .innerRadius(labelRadius)
-      .outerRadius(labelRadius);
+    const arcs = pie(colorData);
 
-  const arcs = pie(colorData);
+    // Create the SVG container.
+    const svg = d3.create("svg")
+                  .attr("width", width)
+                  .attr("height", height)
+                  .attr("viewBox", [-width / 2, -height / 2, width, height])
+                  .attr("style", "max-width: 100%; height: auto; font: 10px sans-serif;");
 
-  // Create the SVG container.
-  const svg = d3.create("svg")
-      .attr("width", width)
-      .attr("height", height)
-      .attr("viewBox", [-width / 2, -height / 2, width, height])
-      .attr("style", "max-width: 100%; height: auto; font: 10px sans-serif;");
+    // Add a sector path for each value.
+    svg.append("g")
+       .attr("stroke", "white")
+       .selectAll()
+       .data(arcs)
+       .join("path")
+       .attr("fill", d => color(d.data.color))
+       .attr("d", arc)
+       .append("title")
+       .text(d => `${d.data.color}: ${d.data.total}`);
 
-  // Add a sector path for each value.
-  svg.append("g")
-      .attr("stroke", "white")
-    .selectAll()
-    .data(arcs)
-    .join("path")
-      .attr("fill", d => color(d.data.color))
-      .attr("d", arc)
-    .append("title")
-      .text(d => `${d.data.color}: ${d.data.total}`);
+    // Create a new arc generator to place a label close to the edge.
+    // The label shows the value if there is enough room.
+    svg.append("g")
+       .attr("text-anchor", "middle")
+       .selectAll()
+       .data(arcs)
+       .join("text")
+       .attr("transform", d => `translate(${arcLabel.centroid(d)})`)
+       .call(text => text.append("tspan")
+                         .attr("y", "-0.4em")
+                         .attr("fill", "gray")
+                         .attr("font-size", 15)
+                         .attr("font-weight", "bold")
+                         .text(d => d.data.color))
+       .call(text => text.filter(d => (d.endAngle - d.startAngle) > 0.25)
+                         .append("tspan")
+                         .attr("x", 0)
+                         .attr("y", "0.7em")
+                         .attr("fill", "gray")
+                         .attr("font-size", 15)
+                         .attr("fill-opacity", 0.7)
+                         .text(d => d.data.total));
 
-  // Create a new arc generator to place a label close to the edge.
-  // The label shows the value if there is enough room.
-  svg.append("g")
-      .attr("text-anchor", "middle")
-    .selectAll()
-    .data(arcs)
-    .join("text")
-      .attr("transform", d => `translate(${arcLabel.centroid(d)})`)
-      .call(text => text.append("tspan")
-          .attr("y", "-0.4em")
-          .attr("fill", "gray")
-          .attr("font-size", 15)
-          .attr("font-weight", "bold")
-          .text(d => d.data.color))
-      .call(text => text.filter(d => (d.endAngle - d.startAngle) > 0.25).append("tspan")
-          .attr("x", 0)
-          .attr("y", "0.7em")
-          .attr("fill", "gray")
-          .attr("font-size", 15)
-          .attr("fill-opacity", 0.7)
-          .text(d => d.data.total));
-
-  return svg.node();
-}
-
-export function cmc_bars_by_color_left(dataLeft, {width, height} = {}) {
-    // return Plot.rectY(data, Plot.binX({y: "count"}, {x: d3.randomNormal()})).plot();
-    return Plot.plot({
-        width: 400,
-        height: height,
-        marks: [
-            Plot.barX(dataLeft, {
-                marginLeft: 100,
-                // y: (d) => d.layout,
-                // x: (d) => d.count
-                x: 'count',
-                y: d => parseInt(d['mana_cost'])
-            })
-        ],
-        y: {reverse: true},
-        x: {reverse: true}
-    });
+    return svg.node();
 }
 
 export function attribute_bars_by_color_d3(cards, colorLeft, colorRight, attribute, {w, h} = {}) {
-    const width = 800/3*2;
-    const height = 600/3*2;
     let dataLeft;
     let dataRight;
+    // Load correct data to the left and right side of the plot
     if (attribute === "mana cost") {
         const cmc_count_by_color_left = cards.cmc_count_by_color[colorLeft];
         const cmc_data_left = Object.keys(cmc_count_by_color_left).map((key) => ({mana_cost: key, count: cmc_count_by_color_left[key]}));
@@ -262,188 +173,156 @@ export function attribute_bars_by_color_d3(cards, colorLeft, colorRight, attribu
         dataRight = toughness_data_right.filter(d => d.toughness !== 'total' && d.toughness !== 'null' && parseInt(d.toughness) <= 8 && d.toughness !== '*' && d.toughness !== '-1' && d.toughness !== '+1' && d.toughness !== '+0' && d.toughness !== '1+*' && d.toughness !== '+2' && d.toughness !== '+4' && d.toughness !== '2.5' && d.toughness !== '?' && d.toughness !== '+3' && d.toughness !== '*²' && d.toughness !== '3.5' && d.toughness !== '∞' && d.toughness !== '2+*' && d.toughness !== '1.5' && d.toughness !== '.5' && d.toughness !== '-0' && d.toughness !== '7-*');
     }
 
+    // Add information to the data points to indicate wether it belongs to the left or right side of the plot
     const left_data = dataLeft.map(d => {
         d['side'] = "L";
         return d;});
     const right_data = dataRight.map(d => {
         d['side'] = "R";
         return d;})
+    // Join all data together
     const data = left_data.concat(right_data);
 
-    
-  const color = d3.scaleOrdinal()
-  .domain(['black', 'red', 'white', 'green', 'blue', 'multicolor', 'colorless'])
-  .range(['#C4D0D0', '#F09EA7', '#FAFABE', '#C1EBC0', '#C7CAFF', '#CDABEB', '#F6C2F3'])
+    // Link card colors to manually chosen color representation
+    const color = d3.scaleOrdinal()
+                    .domain(['black', 'red', 'white', 'green', 'blue', 'multicolor', 'colorless'])
+                    .range(['#C4D0D0', '#F09EA7', '#FAFABE', '#C1EBC0', '#C7CAFF', '#CDABEB', '#F6C2F3'])
 
+    // Get correct color depending on selected card colors
     let colorLeft_color = color(colorLeft)
-    // let colorLeft_color = colorLeft
-    // if (colorLeft === "multicolor") {
-    //     colorLeft_color = "purple";
-    // }
-    // if (colorLeft === "colorless") {
-    //     colorLeft_color = "gray";
-    // }
-    // if (colorLeft === "white") {
-    //     colorLeft_color = "lightgray";
-    // }
-
     let colorRight_color = color(colorRight)
-    // let colorRight_color = colorRight 
-    // if (colorRight === "multicolor") {
-    //     colorRight_color = "purple";
-    // }
-    // if (colorRight === "colorless") {
-    //     colorRight_color = "gray";
-    // }
-    // if (colorRight === "white") {
-    //     colorRight_color = "lightgray";
-    // }
 
-    
+    // Get correct attribute name
     let attr = attribute;
     if (attribute === "mana cost") {
         attr = "mana_cost"
     }
 
-    const margin = ({top: 20, right: 20, bottom: 40, left: 20})
+    const width = 800/3*2;
+    const height = 600/3*2;
 
-    const xLeft = d3.scaleLinear()
-    .domain([0, d3.max(data, d => d.count*1.1)])
-    .rangeRound([width / 2, margin.left])
+    const marginTop = 20;
+    const marginRight = 20;
+    const marginBottom = 40;
+    const marginLeft = 20;
 
-    const xRight = d3.scaleLinear()
-    .domain(xLeft.domain())
-    .rangeRound([width / 2, width - margin.right])
+    // Scale for data on left side of plot
+    const barLeft = d3.scaleLinear([0, d3.max(data, d => d.count*1.1)], [width / 2, marginLeft])
+    // Scale for data on right side of plot
+    const barRight = d3.scaleLinear(barLeft.domain(), [width / 2, width - marginRight])
+    // Scale for data on y axis of plot. Also add padding so there will be space between the bars in the plot.
+    const y = d3.scaleBand(data.map(d => d[attr]), [height - marginBottom, marginTop])
+                .padding(0.1)
 
-    const y = d3.scaleBand()
-    .domain(data.map(d => d[attr]))
-    .rangeRound([height - margin.bottom, margin.top])
-    .padding(0.1)
+    // Construct the x axis
+    const xAxis = g => g.attr("transform", `translate(0,${height - marginBottom})`)
+                        .call(g => g.append("g")  // Axis for left data
+                                    .call(d3.axisBottom(barLeft)
+                                            .ticks(width / 150, "m")
+                                    .tickSizeOuter(0)))
+                        .call(g => g.append("g")  // Axis for right data
+                                    .call(d3.axisBottom(barRight)
+                                            .ticks(width / 150, "m")
+                                    .tickSizeOuter(0)))
+                        .call(g => g.selectAll(".domain"))
+                        .call(g => g.selectAll(".tick text")
+                                    .attr("fill", "black")
+                                    .attr("font-size", 15))
 
-    const xAxis = g => g
-    .attr("transform", `translate(0,${height - margin.bottom})`)
-    .call(g => g.append("g").call(d3.axisBottom(xLeft).ticks(width / 150, "m").tickSizeOuter(0)))
-    // .call(g => g.append("g").call(d3.axisBottom(xM).tickSizeInner(width / 80, "m")))
-    .call(g => g.append("g").call(d3.axisBottom(xRight).ticks(width / 150, "m").tickSizeOuter(0)))
-    .call(g => g.selectAll(".domain"))
-    .call(g => g.selectAll(".tick:first-of-type"))
-    .call(g => g.selectAll(".tick text").attr("fill", "black").attr("font-size", 15))
-    // .call(d3.innerTickSize(-100))
+    // Construct the y axis
+    const yAxis = g => g.attr("transform", `translate(${marginLeft},0)`)
+                        .call(d3.axisLeft(y).tickSizeOuter(0))
+                        .call(g => g.selectAll(".tick text").attr("fill", "black").attr("font-size", 15))
 
-    const yAxis = g => g
-    // .attr("transform", `translate(${xM(0)},0)`)
-    .attr("transform", `translate(${margin.left},0)`)
-    .call(d3.axisLeft(y).tickSizeOuter(0))
-    .call(g => g.selectAll(".tick text").attr("fill", "black").attr("font-size", 15))
+    // Vertical gridlines on left side of plot
+    const xAxisGridLeft = d3.axisBottom(barLeft)
+                            .tickSize(marginTop + marginBottom - height)
+                            .tickFormat('')
+                            .ticks(width/150, "m")
+                            .tickSizeOuter(0)
 
-    // const yAxisGrid = d3.axisLeft(y).tickSize(margin.left + margin.right - width).tickFormat('')
-    const xAxisGridRight = d3.axisBottom(xRight)
-        .tickSize(margin.top + margin.bottom - height)
-        .tickFormat('')
-        .ticks(width/150, "m")
-        .tickSizeOuter(0)
+    // Vertical gridlines on right side of plot
+    const xAxisGridRight = d3.axisBottom(barRight)
+                             .tickSize(marginTop + marginBottom - height)
+                             .tickFormat('')
+                             .ticks(width/150, "m")
+                             .tickSizeOuter(0)
+
+    // Add svg element that is root of our ploot
+    const svg = d3.create("svg")
+                  .attr("width", width)
+                  .attr("height", height)
+                  .attr("font-family", "sans-serif")
+                  .attr("font-size", 15);
+
+    // Draw x axis
+    svg.append("g")
+       .call(xAxis);
     
-    const xAxisGridLeft = d3.axisBottom(xLeft)
-        .tickSize(margin.top + margin.bottom - height)
-        .tickFormat('')
-        .ticks(width/150, "m")
-        .tickSizeOuter(0)
-
-    const svg = d3.create("svg").attr("width", width).attr("height", height)
-        .attr("font-family", "sans-serif")
-        .attr("font-size", 15);
-      
-        // svg.append("g")
-        //     .attr("fill", "black")
-        //   .selectAll("text")
-        //   .data(data)
-        //   .join("text")
-        //     .attr("text-anchor", d => d.side === "L" ? "end" : "start")
-        //     .attr("x", d => d.side === "L" ? xM(d.count) - 4 : xF(d.count) + 4)
-        //     .attr("y", d => y(d[attr]) + y.bandwidth() / 2)
-        //     .attr("dy", "0.35em")
-        //     .text(d => d.count);
-      
+    // Draw y axis
     svg.append("g")
-        .call(xAxis);
-      
+       .call(yAxis);
+
+    // Draw gridlines on left side
     svg.append("g")
-        .call(yAxis);
+       .attr('class', 'y axis-grid')
+       .attr('transform', 'translate(0, ' + (height - marginBottom) + ')')
+       .call(xAxisGridLeft);
 
-        // svg.append("g")
-        //     .attr('class', 'x axis-grid')
-        //     .attr('transform', 'translate(' + margin.left+ ', 0)')
-        //     .call(yAxisGrid);
-
+    // Draw gridlines on right side
     svg.append("g")
-        .attr('class', 'y axis-grid')
-        .attr('transform', 'translate(0, ' + (height - margin.bottom) + ')')
-        .call(xAxisGridRight);
+       .attr('class', 'y axis-grid')
+       .attr('transform', 'translate(0, ' + (height - marginBottom) + ')')
+       .call(xAxisGridRight);
 
-    svg.append("g")
-        .attr('class', 'y axis-grid')
-        .attr('transform', 'translate(0, ' + (height - margin.bottom) + ')')
-        .call(xAxisGridLeft);
-            // .selectAll(".axis-grid")
-            // .attr("stroke", "blue");
-        
-        // svg.append("g")
-        //     .call(xAxisGridF);
-            
-        // var xAxisGrid = xAxis.ticks(6)
-        //     .tickSize(-h, 0)
-        //     .tickFormat("")
-        //     .orient("top");
-
-        // svg.append("g")
-        //     .classed('x', true)
-        //     .classed('grid', true)
-        //     .call(xAxisGrid);
-
-    svg.append("g")
-        .append("text")
-        .attr("class", "x label")
-        .attr("text-anchor", "middle")
-        .attr("x", width/2)
-        .attr("y", height - 6)
-        .text("card count");
-
-    svg.append("g")
-        .append("text")
-        .attr("class", "y label")
-        .attr("text-anchor", "start")
-        .attr("x", 0)
-        .attr("y", 5)
-        .attr("dy", ".75em")
-        .text(`↑ ${attribute}`);
-
+    // Give gridlines a light gray color
     svg.selectAll(".axis-grid .tick line")
-        .attr("stroke", "lightgray")
-      
-    svg.append("g")
-        .selectAll("rect")
-        .data(data)
-        .join("rect")
-        .attr("fill", d => d.side === "L" ? colorLeft_color : colorRight_color)
-        .attr("x", d => d.side === "L" ? xLeft(d.count) : xRight(0))
-        .attr("y", d => y(d[attr]))
-        .attr("width", d => d.side === "L" ? xLeft(0) - xLeft(d.count) : xRight(d.count) - xRight(0))
-        .attr("height", y.bandwidth())
-        .append("title")
-        .text(d => `${attribute}: ${d[attr]}\ncount: ${d.count}`);
+       .attr("stroke", "lightgray")
 
+    // Place x label
+    svg.append("g")
+       .append("text")
+       .attr("class", "x label")
+       .attr("text-anchor", "middle")
+       .attr("x", width/2)
+       .attr("y", height - 6)
+       .text("card count");
+
+    // Place y label
+    svg.append("g")
+       .append("text")
+       .attr("class", "y label")
+       .attr("text-anchor", "start")
+       .attr("x", 0)
+       .attr("y", 5)
+       .attr("dy", ".75em")
+       .text(`↑ ${attribute}`);
+    
+    // Draw the bars on the left and right side and add hover tooltip
+    svg.append("g")
+       .selectAll("rect")
+       .data(data)
+       .join("rect")
+       .attr("fill", d => d.side === "L" ? colorLeft_color : colorRight_color)
+       .attr("x", d => d.side === "L" ? barLeft(d.count) : barRight(0))
+       .attr("y", d => y(d[attr]))
+       .attr("width", d => d.side === "L" ? barLeft(0) - barLeft(d.count) : barRight(d.count) - barRight(0))
+       .attr("height", y.bandwidth())
+       .append("title")
+       .text(d => `${attribute}: ${d[attr]}\ncount: ${d.count}`);
+
+    // Add color label of data on the left side to the axis
     svg.append("text")
         .attr("text-anchor", "end")
-        // .attr("fill", colorLeft_color)
         .attr("dy", "0.35em")
         .attr("x", 260)
         .attr("y", height - 50)
         .attr("font-size", '15px')
         .text(`${colorLeft} ←`);
 
+    // Add color label of data on the right side to the axis
     svg.append("text")
         .attr("text-anchor", "start")
-        // .attr("fill", colorRight_color)
         .attr("dy", "0.35em")
         .attr("x", width - 260)
         .attr("y", height - 50)
@@ -453,654 +332,3 @@ export function attribute_bars_by_color_d3(cards, colorLeft, colorRight, attribu
     return svg.node();
 }
 
-export function cmc_bars_by_color_d3(dataLeft, dataRight, colorLeft, colorRight, {w, h} = {}) {
-    const width = 800;
-    const height = 600;
-    /* const barPadding = 1;
-    // d3.select("div.d3-cmc-bars-by-color").append("svg").attr("class", "d3-cmc-bars-by-color").attr("width", width).attr("height", height);
-    // d3.select("svg.d3-cmc-bars-by-color")
-    
-    const xScale = d3.scaleLinear()
-
-    // const data = Object.entries(dataLeft);
-    const data = dataLeft;
-    console.log("hey");
-    console.log(dataLeft);
-    console.log(data);
-    const svg = d3.create("svg")
-    .attr("width", width)
-    .attr("height", height);;
-
-    svg.append("g")
-      .selectAll("rect")
-    //   .data(dataLeft.entries())
-      .data(data)
-      .enter()
-      .append("rect")
-      .attr("x", d => width - parseInt(d.mana_cost) * 4)
-      .attr("y", (d, i) => i * (height / data.length))
-      .attr("width", d => d.count)
-      .attr("height", d => height / data.length - barPadding)
-    //   .style("x", d => parseInt(d[0]))
-    //   .style("y", d => parseInt(d[1]/4) + "px");
-    return svg.node(); */
-    const left_data = dataLeft.map(d => {
-        d['side'] = "L";
-        return d;});
-    const right_data = dataRight.map(d => {
-        d['side'] = "R";
-        return d;})
-    const data = left_data.concat(right_data);
-    console.log(data);
-
-    let colorLeft_color = colorLeft 
-    if (colorLeft === "multicolor") {
-        colorLeft_color = "purple";
-    }
-    if (colorLeft === "colorless") {
-        colorLeft_color = "gray";
-    }
-    if (colorLeft === "white") {
-        colorLeft_color = "lightgray";
-    }
-
-    let colorRight_color = colorRight 
-    if (colorRight === "multicolor") {
-        colorRight_color = "purple";
-    }
-    if (colorRight === "colorless") {
-        colorRight_color = "gray";
-    }
-    if (colorRight === "white") {
-        colorRight_color = "lightgray";
-    }
-
-    const margin = ({top: 10, right: 50, bottom: 20, left: 50})
-
-    const xM = d3.scaleLinear()
-    .domain([0, d3.max(data, d => d.count)])
-    .rangeRound([width / 2, margin.left])
-
-    const xF = d3.scaleLinear()
-    .domain(xM.domain())
-    .rangeRound([width / 2, width - margin.right])
-
-    const y = d3.scaleBand()
-    .domain(data.map(d => d.mana_cost))
-    .rangeRound([height - margin.bottom, margin.top])
-    .padding(0.1)
-
-    const xAxis = g => g
-    .attr("transform", `translate(0,${height - margin.bottom})`)
-    .call(g => g.append("g").call(d3.axisBottom(xM).ticks(width / 80, "m")))
-    .call(g => g.append("g").call(d3.axisBottom(xF).ticks(width / 80, "m")))
-    .call(g => g.selectAll(".domain").remove())
-    .call(g => g.selectAll(".tick:first-of-type").remove())
-
-    const yAxis = g => g
-    .attr("transform", `translate(${xM(0)},0)`)
-    .call(d3.axisRight(y).tickSizeOuter(0))
-    .call(g => g.selectAll(".tick text").attr("fill", "white").attr("font-size", 15))
-
-        const svg = d3.create("svg").attr("width", width).attr("height", height)
-            .attr("font-family", "sans-serif")
-            .attr("font-size", 15);
-      
-        svg.append("g")
-          .selectAll("rect")
-          .data(data)
-          .join("rect")
-            .attr("fill", d => d.side === "L" ? colorLeft_color : colorRight_color)
-            .attr("x", d => d.side === "L" ? xM(d.count) : xF(0))
-            .attr("y", d => y(d.mana_cost))
-            .attr("width", d => d.side === "L" ? xM(0) - xM(d.count) : xF(d.count) - xF(0))
-            .attr("height", y.bandwidth());
-      
-        svg.append("g")
-            .attr("fill", "black")
-          .selectAll("text")
-          .data(data)
-          .join("text")
-            .attr("text-anchor", d => d.side === "L" ? "end" : "start")
-            .attr("x", d => d.side === "L" ? xM(d.count) - 4 : xF(d.count) + 4)
-            .attr("y", d => y(d.mana_cost) + y.bandwidth() / 2)
-            .attr("dy", "0.35em")
-            .text(d => d.count);
-      
-        svg.append("text")
-            .attr("text-anchor", "end")
-            .attr("fill", colorLeft_color)
-            .attr("dy", "0.35em")
-            .attr("x", 150)
-            .attr("y", 100)
-            .attr("font-size", 30)
-            .text(colorLeft);
-      
-        svg.append("text")
-            .attr("text-anchor", "start")
-            .attr("fill", colorRight_color)
-            .attr("dy", "0.35em")
-            .attr("x", width - 150)
-            .attr("y", 100)
-            .attr("font-size", 30)
-            .text(colorRight);
-      
-        svg.append("g")
-            .call(xAxis);
-      
-        svg.append("g")
-            .call(yAxis);
-      
-        return svg.node();
-}
-
-export function power_bars_by_color_d3(dataLeft, dataRight, colorLeft, colorRight, {w, h} = {}) {
-    const width = 800;
-    const height = 600;
-    /* const barPadding = 1;
-    // d3.select("div.d3-cmc-bars-by-color").append("svg").attr("class", "d3-cmc-bars-by-color").attr("width", width).attr("height", height);
-    // d3.select("svg.d3-cmc-bars-by-color")
-    
-    const xScale = d3.scaleLinear()
-
-    // const data = Object.entries(dataLeft);
-    const data = dataLeft;
-    console.log("hey");
-    console.log(dataLeft);
-    console.log(data);
-    const svg = d3.create("svg")
-    .attr("width", width)
-    .attr("height", height);;
-
-    svg.append("g")
-      .selectAll("rect")
-    //   .data(dataLeft.entries())
-      .data(data)
-      .enter()
-      .append("rect")
-      .attr("x", d => width - parseInt(d.mana_cost) * 4)
-      .attr("y", (d, i) => i * (height / data.length))
-      .attr("width", d => d.count)
-      .attr("height", d => height / data.length - barPadding)
-    //   .style("x", d => parseInt(d[0]))
-    //   .style("y", d => parseInt(d[1]/4) + "px");
-    return svg.node(); */
-    const left_data = dataLeft.map(d => {
-        d['side'] = "L";
-        return d;});
-    const right_data = dataRight.map(d => {
-        d['side'] = "R";
-        return d;})
-    const data = left_data.concat(right_data);
-    console.log(data);
-
-    let colorLeft_color = colorLeft 
-    if (colorLeft === "multicolor") {
-        colorLeft_color = "purple";
-    }
-    if (colorLeft === "colorless") {
-        colorLeft_color = "gray";
-    }
-    if (colorLeft === "white") {
-        colorLeft_color = "lightgray";
-    }
-
-    let colorRight_color = colorRight 
-    if (colorRight === "multicolor") {
-        colorRight_color = "purple";
-    }
-    if (colorRight === "colorless") {
-        colorRight_color = "gray";
-    }
-    if (colorRight === "white") {
-        colorRight_color = "lightgray";
-    }
-
-    const margin = ({top: 10, right: 50, bottom: 20, left: 50})
-
-    const xM = d3.scaleLinear()
-    .domain([0, d3.max(data, d => d.count)])
-    .rangeRound([width / 2, margin.left])
-
-    const xF = d3.scaleLinear()
-    .domain(xM.domain())
-    .rangeRound([width / 2, width - margin.right])
-
-    const y = d3.scaleBand()
-    .domain(data.map(d => d.power))
-    .rangeRound([height - margin.bottom, margin.top])
-    .padding(0.1)
-
-    const xAxis = g => g
-    .attr("transform", `translate(0,${height - margin.bottom})`)
-    .call(g => g.append("g").call(d3.axisBottom(xM).ticks(width / 80, "m")))
-    .call(g => g.append("g").call(d3.axisBottom(xF).ticks(width / 80, "m")))
-    .call(g => g.selectAll(".domain").remove())
-    .call(g => g.selectAll(".tick:first-of-type").remove())
-
-    const yAxis = g => g
-    .attr("transform", `translate(${xM(0)},0)`)
-    .call(d3.axisRight(y).tickSizeOuter(0))
-    .call(g => g.selectAll(".tick text").attr("fill", "white").attr("font-size", 15))
-
-        const svg = d3.create("svg").attr("width", width).attr("height", height)
-            .attr("font-family", "sans-serif")
-            .attr("font-size", 15);
-      
-        svg.append("g")
-          .selectAll("rect")
-          .data(data)
-          .join("rect")
-            .attr("fill", d => d.side === "L" ? colorLeft_color : colorRight_color)
-            .attr("x", d => d.side === "L" ? xM(d.count) : xF(0))
-            .attr("y", d => y(d.power))
-            .attr("width", d => d.side === "L" ? xM(0) - xM(d.count) : xF(d.count) - xF(0))
-            .attr("height", y.bandwidth());
-      
-        svg.append("g")
-            .attr("fill", "black")
-          .selectAll("text")
-          .data(data)
-          .join("text")
-            .attr("text-anchor", d => d.side === "L" ? "end" : "start")
-            .attr("x", d => d.side === "L" ? xM(d.count) - 4 : xF(d.count) + 4)
-            .attr("y", d => y(d.power) + y.bandwidth() / 2)
-            .attr("dy", "0.35em")
-            .text(d => d.count);
-      
-        svg.append("text")
-            .attr("text-anchor", "end")
-            .attr("fill", colorLeft_color)
-            .attr("dy", "0.35em")
-            .attr("x", 150)
-            .attr("y", 100)
-            .attr("font-size", 30)
-            .text(colorLeft);
-      
-        svg.append("text")
-            .attr("text-anchor", "start")
-            .attr("fill", colorRight_color)
-            .attr("dy", "0.35em")
-            .attr("x", width - 150)
-            .attr("y", 100)
-            .attr("font-size", 30)
-            .text(colorRight);
-      
-        svg.append("g")
-            .call(xAxis);
-      
-        svg.append("g")
-            .call(yAxis);
-      
-        return svg.node();
-}
-
-export function toughness_bars_by_color_d3(dataLeft, dataRight, colorLeft, colorRight, {w, h} = {}) {
-    const width = 800;
-    const height = 600;
-    /* const barPadding = 1;
-    // d3.select("div.d3-cmc-bars-by-color").append("svg").attr("class", "d3-cmc-bars-by-color").attr("width", width).attr("height", height);
-    // d3.select("svg.d3-cmc-bars-by-color")
-    
-    const xScale = d3.scaleLinear()
-
-    // const data = Object.entries(dataLeft);
-    const data = dataLeft;
-    console.log("hey");
-    console.log(dataLeft);
-    console.log(data);
-    const svg = d3.create("svg")
-    .attr("width", width)
-    .attr("height", height);;
-
-    svg.append("g")
-      .selectAll("rect")
-    //   .data(dataLeft.entries())
-      .data(data)
-      .enter()
-      .append("rect")
-      .attr("x", d => width - parseInt(d.mana_cost) * 4)
-      .attr("y", (d, i) => i * (height / data.length))
-      .attr("width", d => d.count)
-      .attr("height", d => height / data.length - barPadding)
-    //   .style("x", d => parseInt(d[0]))
-    //   .style("y", d => parseInt(d[1]/4) + "px");
-    return svg.node(); */
-    const left_data = dataLeft.map(d => {
-        d['side'] = "L";
-        return d;});
-    const right_data = dataRight.map(d => {
-        d['side'] = "R";
-        return d;})
-    const data = left_data.concat(right_data);
-    console.log(data);
-
-    let colorLeft_color = colorLeft 
-    if (colorLeft === "multicolor") {
-        colorLeft_color = "purple";
-    }
-    if (colorLeft === "colorless") {
-        colorLeft_color = "gray";
-    }
-    if (colorLeft === "white") {
-        colorLeft_color = "lightgray";
-    }
-
-    let colorRight_color = colorRight 
-    if (colorRight === "multicolor") {
-        colorRight_color = "purple";
-    }
-    if (colorRight === "colorless") {
-        colorRight_color = "gray";
-    }
-    if (colorRight === "white") {
-        colorRight_color = "lightgray";
-    }
-
-    const margin = ({top: 10, right: 50, bottom: 20, left: 50})
-
-    const xM = d3.scaleLinear()
-    .domain([0, d3.max(data, d => d.count)])
-    .rangeRound([width / 2, margin.left])
-
-    const xF = d3.scaleLinear()
-    .domain(xM.domain())
-    .rangeRound([width / 2, width - margin.right])
-
-    const y = d3.scaleBand()
-    .domain(data.map(d => d.toughness))
-    .rangeRound([height - margin.bottom, margin.top])
-    .padding(0.1)
-
-    const xAxis = g => g
-    .attr("transform", `translate(0,${height - margin.bottom})`)
-    .call(g => g.append("g").call(d3.axisBottom(xM).ticks(width / 80, "m")))
-    .call(g => g.append("g").call(d3.axisBottom(xF).ticks(width / 80, "m")))
-    .call(g => g.selectAll(".domain").remove())
-    .call(g => g.selectAll(".tick:first-of-type").remove())
-
-    const yAxis = g => g
-    .attr("transform", `translate(${xM(0)},0)`)
-    .call(d3.axisRight(y).tickSizeOuter(0))
-    .call(g => g.selectAll(".tick text").attr("fill", "white").attr("font-size", 15))
-
-        const svg = d3.create("svg").attr("width", width).attr("height", height)
-            .attr("font-family", "sans-serif")
-            .attr("font-size", 15);
-      
-        svg.append("g")
-          .selectAll("rect")
-          .data(data)
-          .join("rect")
-            .attr("fill", d => d.side === "L" ? colorLeft_color : colorRight_color)
-            .attr("x", d => d.side === "L" ? xM(d.count) : xF(0))
-            .attr("y", d => y(d.toughness))
-            .attr("width", d => d.side === "L" ? xM(0) - xM(d.count) : xF(d.count) - xF(0))
-            .attr("height", y.bandwidth());
-      
-        svg.append("g")
-            .attr("fill", "black")
-          .selectAll("text")
-          .data(data)
-          .join("text")
-            .attr("text-anchor", d => d.side === "L" ? "end" : "start")
-            .attr("x", d => d.side === "L" ? xM(d.count) - 4 : xF(d.count) + 4)
-            .attr("y", d => y(d.toughness) + y.bandwidth() / 2)
-            .attr("dy", "0.35em")
-            .text(d => d.count);
-      
-        svg.append("text")
-            .attr("text-anchor", "end")
-            .attr("fill", colorLeft_color)
-            .attr("dy", "0.35em")
-            .attr("x", 150)
-            .attr("y", 100)
-            .attr("font-size", 30)
-            .text(colorLeft);
-      
-        svg.append("text")
-            .attr("text-anchor", "start")
-            .attr("fill", colorRight_color)
-            .attr("dy", "0.35em")
-            .attr("x", width - 150)
-            .attr("y", 100)
-            .attr("font-size", 30)
-            .text(colorRight);
-      
-        svg.append("g")
-            .call(xAxis);
-      
-        svg.append("g")
-            .call(yAxis);
-      
-        return svg.node();
-}
-
-export function power_toughness_difference_bars_by_color_d3(dataLeft, dataRight, colorLeft, colorRight, {w, h} = {}) {
-    const width = 600;
-    const height = 400;
-    /* const barPadding = 1;
-    // d3.select("div.d3-cmc-bars-by-color").append("svg").attr("class", "d3-cmc-bars-by-color").attr("width", width).attr("height", height);
-    // d3.select("svg.d3-cmc-bars-by-color")
-    
-    const xScale = d3.scaleLinear()
-
-    // const data = Object.entries(dataLeft);
-    const data = dataLeft;
-    console.log("hey");
-    console.log(dataLeft);
-    console.log(data);
-    const svg = d3.create("svg")
-    .attr("width", width)
-    .attr("height", height);;
-
-    svg.append("g")
-      .selectAll("rect")
-    //   .data(dataLeft.entries())
-      .data(data)
-      .enter()
-      .append("rect")
-      .attr("x", d => width - parseInt(d.mana_cost) * 4)
-      .attr("y", (d, i) => i * (height / data.length))
-      .attr("width", d => d.count)
-      .attr("height", d => height / data.length - barPadding)
-    //   .style("x", d => parseInt(d[0]))
-    //   .style("y", d => parseInt(d[1]/4) + "px");
-    return svg.node(); */
-    const left_data = dataLeft.map(d => {
-        d['side'] = "L";
-        return d;});
-    const right_data = dataRight.map(d => {
-        d['side'] = "R";
-        return d;})
-    const data = left_data.concat(right_data);
-    console.log(data);
-
-    const margin = ({top: 10, right: 0, bottom: 20, left: 0})
-
-    const xM = d3.scaleLinear()
-    .domain([0, d3.max(data, d => d.count)])
-    .rangeRound([width / 2, margin.left])
-
-    const xF = d3.scaleLinear()
-    .domain(xM.domain())
-    .rangeRound([width / 2, width - margin.right])
-
-    const y = d3.scaleBand()
-    .domain(data.map(d => parseFloat(d.power_toughness_difference)))
-    .rangeRound([height - margin.bottom, margin.top])
-    .padding(0.1)
-
-    const xAxis = g => g
-    .attr("transform", `translate(0,${height - margin.bottom})`)
-    .call(g => g.append("g").call(d3.axisBottom(xM).ticks(width / 80, "s")))
-    .call(g => g.append("g").call(d3.axisBottom(xF).ticks(width / 80, "s")))
-    .call(g => g.selectAll(".domain").remove())
-    .call(g => g.selectAll(".tick:first-of-type").remove())
-
-    const yAxis = g => g
-    .attr("transform", `translate(${xM(0)},0)`)
-    .call(d3.axisRight(y).tickSizeOuter(0))
-    .call(g => g.selectAll(".tick text").attr("fill", "white"))
-
-        const svg = d3.create("svg")
-            .attr("viewBox", [0, 0, width, height])
-            .attr("font-family", "sans-serif")
-            .attr("font-size", 10)
-            .attr("padding", 20);
-      
-        svg.append("g")
-          .selectAll("rect")
-          .data(data)
-          .join("rect")
-            .attr("fill", d => d.side === "L" ? colorLeft : colorRight)
-            .attr("x", d => d.side === "L" ? xM(d.count) : xF(0))
-            .attr("y", d => y(parseFloat(d.power_toughness_difference)))
-            .attr("width", d => d.side === "L" ? xM(0) - xM(d.count) : xF(d.count) - xF(0))
-            .attr("height", y.bandwidth());
-      
-        svg.append("g")
-            .attr("fill", "black")
-          .selectAll("text")
-          .data(data)
-          .join("text")
-            .attr("text-anchor", d => d.side === "L" ? "end" : "start")
-            .attr("x", d => d.side === "L" ? xM(d.count) - 4 : xF(d.count) + 4)
-            .attr("y", d => y(parseFloat(d.power_toughness_difference)) + y.bandwidth() / 2)
-            .attr("dy", "0.35em")
-            .text(d => d.count);
-      
-        svg.append("text")
-            .attr("text-anchor", "end")
-            .attr("fill", "white")
-            .attr("dy", "0.35em")
-            .attr("x", xM(0) - 4)
-            .attr("y", y(parseFloat(data[0].power_toughness_difference)) + y.bandwidth() / 2)
-            .text(colorLeft);
-      
-        svg.append("text")
-            .attr("text-anchor", "start")
-            .attr("fill", "white")
-            .attr("dy", "0.35em")
-            .attr("x", xF(0) + 24)
-            .attr("y", y(parseFloat(data[0].power_toughness_difference)) + y.bandwidth() / 2)
-            .text(colorRight);
-      
-        svg.append("g")
-            .call(xAxis);
-      
-        svg.append("g")
-            .call(yAxis);
-      
-        return svg.node();
-}
-
-export function cmc_bars_by_color_original(data, {width, height} = {}) {
-    // return Plot.rectY(data, Plot.binX({y: "count"}, {x: d3.randomNormal()})).plot();
-    return Plot.plot({
-        width: width,
-        height: height,
-        marks: [
-            Plot.barX(data, {
-                marginLeft: 100,
-                // y: (d) => d.layout,
-                // x: (d) => d.count
-                x: 'count',
-                y: d => parseInt(d['mana_cost'])
-            })
-        ]
-    });
-}
-
-export function power_bars(data, {width, height} = {}) {
-    // return Plot.rectY(data, Plot.binX({y: "count"}, {x: d3.randomNormal()})).plot();
-    return Plot.plot({
-        width: width,
-        height: height,
-        marks: [
-            Plot.barX(data, {
-                marginLeft: 100,
-                // y: (d) => d.layout,
-                // x: (d) => d.count
-                x: 'count',
-                y: d => parseFloat(d['power'])
-            })
-        ]
-    });
-}
-
-export function toughness_bars(data, {width, height} = {}) {
-    // return Plot.rectY(data, Plot.binX({y: "count"}, {x: d3.randomNormal()})).plot();
-    return Plot.plot({
-        width: width,
-        height: height,
-        marks: [
-            Plot.barX(data, {
-                marginLeft: 100,
-                // y: (d) => d.layout,
-                // x: (d) => d.count
-                x: 'count',
-                y: d => parseFloat(d['toughness'])
-            })
-        ]
-    });
-}
-
-export function pow_tough_diff_bars(data, {width, height} = {}) {
-    // return Plot.rectY(data, Plot.binX({y: "count"}, {x: d3.randomNormal()})).plot();
-    return Plot.plot({
-        width: width,
-        height: height,
-        marks: [
-            Plot.barX(data, {
-                marginLeft: 100,
-                // y: (d) => d.layout,
-                // x: (d) => d.count
-                x: 'count',
-                y: d => parseFloat(d['power_toughness_difference'])
-            })
-        ]
-    });
-}
-
-export function set_sizes_bars(data, {width, height} = {}) {
-    // return Plot.rectY(data, Plot.binX({y: "count"}, {x: d3.randomNormal()})).plot();
-    return Plot.plot({
-        width: width,
-        height: height,
-        axisX: {tickSpacing: 10},
-        marks: [
-            Plot.rectY(data, {
-                // y: (d) => d.layout,
-                // x: (d) => d.count
-                x: d => parseInt(d['count']),
-                y: d => parseInt(d['number_of_sets']),
-                title: (d) => `Number of sets: ${d.number_of_sets} \n Set size: ${d.count} \n`
-            })
-        ]
-    });
-}
-
-
-export function set_sizes(data, {width, height} = {}) {
-    // return Plot.rectY(data, Plot.binX({y: "count"}, {x: d3.randomNormal()})).plot();
-    return Plot.plot({
-        width: width,
-        height: height,
-        marks: [
-            Plot.dot(data, {
-                // marginLeft: 100,
-                // y: (d) => d.layout,
-                // x: (d) => d.count
-                x: d => {
-                    let date = new Date(d.release);
-                    return date;
-                },
-                y: 'size',
-                fill: "currentColor",
-                r: 3,
-                title: (d) => `${d.name} (Code '${d.code}')\n Release date: ${new Date(d.release)} \n Size: ${d.size} \n`
-            })
-        ]
-    });
-}
