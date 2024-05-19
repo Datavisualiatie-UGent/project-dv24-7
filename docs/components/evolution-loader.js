@@ -142,14 +142,16 @@ export const reprints = (data, normalized=false) => {
         }
     }
 
+    let yLabel = "Number of cards"
     if (normalized) {
         config.offset = "normalize"
+        yLabel = "Fraction of cards [%]"
     }
 
 
     return Plot.plot({
         x: {tickFormat: "", interval: 1, label: "Time [year]", dx: 1},
-        y: {label: "Fraction of cards [%]", grid: true, percent: normalized},
+        y: {label: yLabel, grid: true, percent: normalized},
         color: {legend: true, scheme: "Spectral", label: "Release type"},
         marks: [
             Plot.barY(data, config),
