@@ -62,10 +62,11 @@ display(attribute_bars_by_color_d3(data.data.cards, color_left, color_right, att
 Some insights:
 
 * The distributions have roughly the same shape. This makes sense because the same game is played.
-* **White** has a distribution with **lower mana cost**. It is caused by white have a focus on smaller creatures that help eachother.
-* **Red** is quick and aggressive color. It has power distribution that is higher than the other colors.
-* The **green** graph for power/toughness looks bigger than the other colors. This is because green has a bigger **focus on creature cards**.
-* For **blue**, we see the **opposite effect** because it focusses less on creature cards.
+* **White** has a distribution with **lower mana cost**. It is caused by white having a focus on smaller creatures that help eachother.
+* **Black** has both a lower toughness and higher power distribution than other colors. It thrives on the death of creatures, even it's own.
+* **Red** is a quick and aggressive color. It has a power distribution that is higher than the other colors.
+* The **green** graph for power/toughness is wider than the other colors. This is because green has a bigger **focus on creature cards** and has more of them.
+* For **blue**, we see the **opposite effect** because it focuses less on creature cards.
 * **Multicolor** cards have **higher cost and stats**. Combining colors leads to more complex cards which skews towards higher stats.
 * There are a lot of **colorless** cards with mana cost of 0. That is because **land** cards are considered colorless, despite generating mana of a certain color.
 * Many more insights are possible.
